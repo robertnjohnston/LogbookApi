@@ -7,7 +7,7 @@ using LogbookApi.Providers;
 
 namespace LogbookApi.Controllers
 {
-    [RoutePrefix("api/flight")]
+    [RoutePrefix("api/Flight")]
     public class FlightController : ApiController
     {
         private readonly IFlightProvider _flightProvider;
@@ -21,7 +21,7 @@ namespace LogbookApi.Controllers
         }
 
         [HttpGet]
-        [Route("/FlightById/{id}")]
+        [Route("FlightById/{id}")]
         public IHttpActionResult Get(int id)
         {
             if (id <= 0) return NotFound();
@@ -32,7 +32,7 @@ namespace LogbookApi.Controllers
         }
 
         [HttpGet]
-        [Route("/FlightByFilter")]
+        [Route("FlightByFilter")]
         public IHttpActionResult Get([FromBody] FlightFilter filter)
         {
             dynamic flights = _flightProvider.GetFilteredFlights(filter);
@@ -41,6 +41,7 @@ namespace LogbookApi.Controllers
         }
 
         [HttpPost]
+        [Route("Save")]
         public IHttpActionResult Post(Flight flight)
         {
             if (flight == null)
