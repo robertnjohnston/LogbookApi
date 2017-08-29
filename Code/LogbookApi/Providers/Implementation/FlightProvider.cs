@@ -22,9 +22,9 @@ namespace LogbookApi.Providers.Implementation
 
         public Flight GetFlight(int id)
         {
-            throw new System.NotImplementedException();
+            return _context.Flight.Find(id);
         }
-
+        
         public void SaveFlight(Flight flight)
         {
             throw new NotImplementedException();
