@@ -54,12 +54,13 @@ namespace LogbookApi.Models
                 case FilterType.Number:
                     return ValidateNumbers();
                 case FilterType.Aircraft:
-                    break;
+                    return ValidateId(Aircraft);
                 case FilterType.Airfield:
-                    break;
+                    return ValidateId(Airfield);
                 case FilterType.Crew:
-                    break;
+                    return ValidateCrew();
                 case FilterType.Launch:
+                    return ValidateLaunch();
                     break;
                 case FilterType.Trace:
                     TraceFile = true;
@@ -68,6 +69,22 @@ namespace LogbookApi.Models
                     return false;
             }
             return true;
+        }
+
+        private bool ValidateLaunch()
+        {
+            if (string.IsNullOrWhiteSpace(Launch)) return false;
+            return (Launch.Length==1);
+        }
+
+        private bool ValidateCrew()
+        {
+            return (Crew >= 0 && Crew < 3);
+        }
+
+        private bool ValidateId(int id)
+        {
+            return (id > 0);
         }
 
         private bool ValidateNumbers()

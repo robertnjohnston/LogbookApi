@@ -92,15 +92,96 @@ namespace LogbookApiTest.Model
         }
 
         [Test]
-        public void ShouldReturnAValidFilterOnInvalidFlightStartLessThanFlightEnd()
+        public void ShouldReturnAValidFilterOnFlightStartLessThanFlightEnd()
         {
             var filter = new FlightFilter { FilterType = FilterType.Number, FlightStart = 1, FlightEnd = 2 };
             filter.IsValid().Should().BeTrue();
         }
     #endregion
 
-    #region AIrcraft/Airfield
+    #region Aircraft/Airfield
+        [Test]
+        public void ShouldReturnAnInvalidFilterOnAircraftMissing()
+        {
+            var filter = new FlightFilter {FilterType = FilterType.Aircraft};
+            filter.IsValid().Should().BeFalse();
+        }
+        
+        [Test]
+        public void ShouldReturnAnInvalidFilterOnInvalidAircraftId()
+        {
+            var filter = new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = -1};
+            filter.IsValid().Should().BeFalse();
+        }
 
+        [Test]
+        public void ShouldReturnAValidFilterOnValidAircraftId()
+        {
+            var filter = new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 1 };
+            filter.IsValid().Should().BeTrue();
+        }
+
+        [Test]
+        public void ShouldReturnAnInvalidFilterOnAirfieldMissing()
+        {
+            var filter = new FlightFilter { FilterType = FilterType.Airfield };
+            filter.IsValid().Should().BeFalse();
+        }
+
+        [Test]
+        public void ShouldReturnAnInvalidFilterOnInvalidAirfieldId()
+        {
+            var filter = new FlightFilter { FilterType = FilterType.Airfield, Airfield = -1 };
+            filter.IsValid().Should().BeFalse();
+        }
+
+        [Test]
+        public void ShouldReturnAValidFilterOnValidAirfieldId()
+        {
+            var filter = new FlightFilter { FilterType = FilterType.Airfield, Airfield = 1 };
+            filter.IsValid().Should().BeTrue();
+        }
+        #endregion
+
+    #region Crew
+
+        [Test]
+        [TestCase(-1)]
+        [TestCase(4)]
+        public void ShouldReturnAnInvalidFilterOnInvalidCrewPosition(int position)
+        {
+            var filter = new FlightFilter {FilterType = FilterType.Crew, Crew = position};
+            filter.IsValid().Should().BeFalse();
+        }
+
+        [Test]
+        [TestCase(0)]
+        [TestCase(1)]
+        [TestCase(2)]
+        public void ShouldReturnValidFilterOnValidCrewPosition(int position)
+        {
+            var filter = new FlightFilter { FilterType = FilterType.Crew, Crew = position };
+            filter.IsValid().Should().BeTrue();
+        }
+    #endregion
+
+    #region Launch
+
+        [Test]
+        public void ShouldReturnAnInvalidFilterOnMissingLaunchType()
+        {
+            var filter = new FlightFilter {FilterType = FilterType.Launch};
+            filter.IsValid().Should().BeFalse();
+        }
+
+        [Test]
+        [TestCase("A")]
+        [TestCase("W")]
+        public void ShouldReturnAValidFilterOnSuppliedLaunchType(string launchType)
+        {
+            var filter = new FlightFilter {FilterType = FilterType.Launch, Launch = launchType};
+            filter.IsValid().Should().BeTrue();
+        }
     #endregion
     }
 }
