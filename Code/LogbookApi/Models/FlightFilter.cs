@@ -34,6 +34,8 @@ namespace LogbookApi.Models
 
         public int Crew { get; set; }
 
+        public bool TraceFile { get; set; }
+
         public bool IsValid()
         {
             return FilterIsValid();
@@ -41,10 +43,43 @@ namespace LogbookApi.Models
 
         private bool FilterIsValid()
         {
-            if(FilterType == FilterType.None) return false;
             if(FilterType == (FilterType.Date & FilterType.Number)) return false;
 
+            switch(FilterType)
+            {
+                case FilterType.None:
+                    return false;
+                case FilterType.Date:
+                    return ValidateDates();
+                case FilterType.Number:
+                    return ValidateNumbers();
+                case FilterType.Aircraft:
+                    break;
+                case FilterType.Airfield:
+                    break;
+                case FilterType.Crew:
+                    break;
+                case FilterType.Launch:
+                    break;
+                case FilterType.Trace:
+                    TraceFile = true;
+                    break;
+                default:
+                    return false;
+            }
             return true;
+        }
+
+        private bool ValidateNumbers()
+        {
+            if(FlightStart <= 0 || FlightEnd <= 0) return false;
+            return FlightStart < FlightEnd;
+        }
+
+        private bool ValidateDates()
+        {
+            if(DateStart == DateTime.MinValue || DateEnd == DateTime.MinValue) return false;
+            return DateStart <= DateEnd;
         }
     }
 }

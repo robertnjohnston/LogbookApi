@@ -18,7 +18,7 @@ using NUnit.Framework;
 namespace LogbookApiTest.Controllers
 {
     [TestFixture]
-    public class FlightControllerTest
+    public class FlightControllerTests
     {
         private Mock<IFlightProvider> MockFlightProvider { get; set; }
 
