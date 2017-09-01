@@ -79,6 +79,8 @@
     <Compile Include="Controllers\FlightControllerTests.cs" />
     <Compile Include="Model\FlightFilterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\AircraftProviderTests.cs" />
+    <Compile Include="Providers\AirfieldProviderTests.cs" />
     <Compile Include="Providers\FlightProviderTests.cs" />
     <Compile Include="TestData\FlightTestData.cs" />
   </ItemGroup>

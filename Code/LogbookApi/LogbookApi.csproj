@@ -291,12 +291,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>LogbookModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Flight.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Page.cs">
       <DependentUpon>LogbookModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\FlightFilter.cs" />
+    <Compile Include="Providers\IEntityProvider.cs" />
+    <Compile Include="Providers\Implementation\AircraftProvider.cs" />
+    <Compile Include="Providers\Implementation\AirfieldProvider.cs" />
     <Compile Include="Providers\Implementation\FlightProvider.cs" />
     <Compile Include="Providers\IFlightProvider.cs" />
     <Compile Include="Providers\IPageProvider.cs" />

@@ -12,6 +12,9 @@ namespace LogbookApi
             return unityContainer
                 .RegisterType<IFlightProvider, FlightProvider>()
                 .RegisterType<IPageProvider, PageProvider>()
+                .RegisterType<IEntityProvider<Airfield>, AirfieldProvider>()
+                .RegisterType<IEntityProvider<Aircraft>, AircraftProvider>()
+                .RegisterInstance(typeof(jetstrea_LogbookEntities), new jetstrea_LogbookEntities())
                 .RegisterType<FlightController>();
         }
     }

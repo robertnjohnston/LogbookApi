@@ -15,13 +15,22 @@ namespace LogbookApiTest.Providers
     public class FlightProviderTests
     {
         private Mock<jetstrea_LogbookEntities> Context { get; set; }
+       
         private Mock<DbSet<Flight>> FlightDbSet { get; set; }
+
+        private Mock<IEntityProvider<Airfield>> MockAirfieldProvider { get; set; }
+
+        private Mock<IEntityProvider<Aircraft>> MockAircraftProvider { get; set; }
 
         [SetUp]
         public void SetupTests()
         {
             Context = new Mock<jetstrea_LogbookEntities>();
             FlightDbSet = new Mock<DbSet<Flight>>();
+
+            MockAirfieldProvider = new Mock<IEntityProvider<Airfield>>();
+
+            MockAircraftProvider = new Mock<IEntityProvider<Aircraft>>();
         }
 
         [Test]
@@ -32,11 +41,27 @@ namespace LogbookApiTest.Providers
         }
 
         [Test]
-        public void ShouldThrowArgumentNullexceptionOnnullContext()
+        public void ShouldThrowArgumentNullexceptionOnNullContext()
         {
-            Action act = () => new FlightProvider(null);
+            Action act = () => new FlightProvider(null, null, null);
 
             act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("context");
+        }
+
+        [Test]
+        public void ShouldThrowArgumentNullexceptionOnNullAirfieldProvider()
+        {
+            Action act = () => new FlightProvider(Context.Object, null, null);
+
+            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("airfieldProvider");
+        }
+
+        [Test]
+        public void ShouldThrowArgumentNullexceptionOnNullAircraftProvider()
+        {
+            Action act = () => new FlightProvider(Context.Object, MockAirfieldProvider.Object, null);
+
+            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("aircraftProvider");
         }
 
         [Test]
@@ -44,9 +69,8 @@ namespace LogbookApiTest.Providers
         {
             FlightDbSet.Setup(m => m.Find(1)).Returns((Flight) null);
             Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
-            var fp = GetTestSubject();
 
-            var result = fp.GetFlight(99);
+            var result = GetTestSubject().GetFlight(99);
 
             result.Should().Be(null);
         }
@@ -54,18 +78,28 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnFlight()
         {
-            FlightDbSet.Setup(m => m.Find(1)).Returns(FlightTestData.Flight(1));
+            var resultData = SetupTest();
+
+            var result = GetTestSubject().GetFlight(1);
+
+            result.ShouldBeEquivalentTo(resultData);
+        }
+
+        private Flight SetupTest()
+        {
+            var testFlight = FlightTestData.Flight(1);
+            FlightDbSet.Setup(m => m.Find(1)).Returns(testFlight);
             Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
-            var fp = GetTestSubject();
-
-            var result = fp.GetFlight(1);
-
-            result.Should().Be(FlightTestData.Flight(1));
+            MockAirfieldProvider.Setup(m => m.Get(1)).Returns(FlightTestData.Airfield);
+            MockAircraftProvider.Setup(m => m.Get(1)).Returns(FlightTestData.Aircraft);
+            testFlight.Airfield = FlightTestData.Airfield().Name;
+            testFlight.Aircraft = FlightTestData.Aircraft().Name;
+            return testFlight;
         }
 
         private IFlightProvider GetTestSubject()
         {
-            return new FlightProvider(Context.Object);
+            return new FlightProvider(Context.Object, MockAirfieldProvider.Object, MockAircraftProvider.Object);
         }
     }
 }

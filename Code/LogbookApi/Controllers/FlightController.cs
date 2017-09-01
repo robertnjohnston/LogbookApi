@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Http;
 using CuttingEdge.Conditions;
@@ -12,11 +13,10 @@ namespace LogbookApi.Controllers
     {
         private readonly IFlightProvider _flightProvider;
 
-        //private readonly IPageProvider _pageProvider;
         public FlightController(IFlightProvider flightProvider)
         {
             Condition.Requires(flightProvider, nameof(flightProvider)).IsNotNull();
-
+            
             _flightProvider = flightProvider;
         }
 
@@ -35,6 +35,10 @@ namespace LogbookApi.Controllers
         [Route("FlightByFilter")]
         public IHttpActionResult Get([FromBody] FlightFilter filter)
         {
+            if(filter == null) return BadRequest("Invalid Filter");
+
+            if (!filter.IsValid()) return BadRequest("Invalid Filter");
+
             dynamic flights = _flightProvider.GetFilteredFlights(filter);
 
             return ((List<Flight>)flights).Any() ? Ok(flights) : NotFound();

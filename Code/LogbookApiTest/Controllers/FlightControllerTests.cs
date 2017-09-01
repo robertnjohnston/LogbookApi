@@ -28,6 +28,7 @@ namespace LogbookApiTest.Controllers
         public void SetupTests()
         {
             MockFlightProvider = new Mock<IFlightProvider>();
+
             MockPageProvider = new Mock<IPageProvider>();
         }
 
@@ -47,61 +48,43 @@ namespace LogbookApiTest.Controllers
         }
 
         [Test]
-        public void ShouldReturnNotFoundOnInvalidFlightNumber()
+        [TestCase(0)]
+        [TestCase(99)]
+        public void ShouldReturnNotFoundOnFlightNumberNotFound(int number)
         {
             MockFlightProvider.Setup(m => m.GetFlight(It.IsAny<int>())).Returns((Flight)null);
 
-            var fc = GetTestSubject();
-
-            var result = fc.Get(0) as NotFoundResult;
+            var result = GetTestSubject().Get(number) as NotFoundResult;
 
             result.Should().NotBe(null);
         }
 
         [Test]
-        public void ShouldReturnNotFoundOnFlightNumberNotFound()
+        public void ShouldReturnBadRequestOnNullFilter()
         {
-            MockFlightProvider.Setup(m => m.GetFlight(It.IsAny<int>())).Returns((Flight)null);
+            MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(new List<Flight>());
 
-            var fc = GetTestSubject();
-
-            var result = fc.Get(999) as NotFoundResult;
+            var result = GetTestSubject().Get((FlightFilter)null) as BadRequestErrorMessageResult;
 
             result.Should().NotBe(null);
         }
 
-        //[Test]
-        //public void ShouldReturnOkResult()
-        //{
-        //    MockFlightProvider.Setup(m => m.GetFlightsByPage(1)).Returns(FlightTestData.Page());
+        [Test]
+        public void ShouldReturnBadRequestOnInvalidFilter()
+        {
+            MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(new List<Flight>());
+            
+            var result = GetTestSubject().Get(new FlightFilter()) as BadRequestErrorMessageResult;
 
-        //    var fc = GetTestSubject();
-
-        //    var result = fc.Get(1)  as OkNegotiatedContentResult<List<Flight>>;
-
-        //    result.Should().NotBe(null);
-        //}
-
-        //[Test]
-        //public void ShouldReturnListofFlights()
-        //{
-        //    MockFlightProvider.Setup(m => m.GetFlightsByPage(1)).Returns(FlightTestData.Page());
-
-        //    var fc = GetTestSubject();
-
-        //    var result = fc.Get(1)  as OkNegotiatedContentResult<List<Flight>>;
-
-        //    GetContent<List<Flight>>(result).Count.Should().Be(10);
-        //}
+            result.Should().NotBe(null);
+        }
 
         [Test]
         public void ShouldReturnNotFoundOnFilter()
         {
             MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(new List<Flight>());
 
-            var fc = GetTestSubject();
-
-            var result = fc.Get(new FlightFilter()) as NotFoundResult;
+            var result = GetTestSubject().Get(new FlightFilter {FilterType = FilterType.Airfield, Airfield = 99}) as NotFoundResult;
 
             result.Should().NotBe(null);
         }
@@ -111,9 +94,7 @@ namespace LogbookApiTest.Controllers
         {
             MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(FlightTestData.FilteredFlights());
 
-            var fc = GetTestSubject();
-
-            var result = fc.Get(new FlightFilter()) as OkNegotiatedContentResult<List<Flight>>;
+            var result = GetTestSubject().Get(new FlightFilter { FilterType = FilterType.Number, FlightStart = 1, FlightEnd = 3}) as OkNegotiatedContentResult<List<Flight>>;
 
             GetContent<List<Flight>>(result).Count.Should().Be(3);
         }
@@ -123,9 +104,7 @@ namespace LogbookApiTest.Controllers
         {
             MockFlightProvider.Setup(m => m.GetFlight(It.IsAny<int>())).Returns(FlightTestData.Flight(3));
 
-            var fc = GetTestSubject();
-
-            var result = fc.Get(3) as OkNegotiatedContentResult<Flight>;
+            var result = GetTestSubject().Get(3) as OkNegotiatedContentResult<Flight>;
 
             result.Content.ShouldBeEquivalentTo(FlightTestData.Flight(3));
         }
@@ -133,9 +112,7 @@ namespace LogbookApiTest.Controllers
         [Test]
         public void ShouldReturnBadRequestOnNullInput()
         {
-            var fc = GetTestSubject();
-
-            var result = fc.Post((Flight)null) as BadRequestResult;
+            var result = GetTestSubject().Post((Flight)null) as BadRequestResult;
 
             result.Should().NotBeNull();
         }
@@ -143,9 +120,7 @@ namespace LogbookApiTest.Controllers
         [Test]
         public void ShouldReturnCreatedResult()
         {
-            var fc = GetTestSubject();
-
-            var result = fc.Post(FlightTestData.Flight(1)) as CreatedNegotiatedContentResult<Flight>;
+            var result = GetTestSubject().Post(FlightTestData.Flight(1)) as CreatedNegotiatedContentResult<Flight>;
 
             result.Should().NotBeNull();
         }
@@ -153,9 +128,7 @@ namespace LogbookApiTest.Controllers
         [Test]
         public void ShouldReturnCreatedFlight()
         {
-            var fc = GetTestSubject();
-
-            var result = fc.Post(FlightTestData.Flight(1)) as CreatedNegotiatedContentResult<Flight>;
+            var result = GetTestSubject().Post(FlightTestData.Flight(1)) as CreatedNegotiatedContentResult<Flight>;
 
             var content = GetContent<Flight>(result);
 
