@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using CuttingEdge.Conditions;
 
 namespace LogbookApi.Providers.Implementation
@@ -23,24 +24,17 @@ namespace LogbookApi.Providers.Implementation
             return _context.Aircraft.Find(id);
         }
 
-        public Aircraft Get(string name)
-        {
-            var aircraftExist = _context.Aircraft.FirstOrDefault(aircraft => aircraft.Name == name) ?? Save(new Aircraft {Name = name});
-
-            return aircraftExist;
-        }
-
         public Aircraft Save(Aircraft entity)
         {
-            var aircraftExists = _context.Aircraft.First(aircraft => aircraft.Name == entity.Name);
-
-            if (aircraftExists == null)
+            if (entity.Id == 0)
             {
-                aircraftExists = _context.Aircraft.Add(entity);
+                entity.Id = _context.Aircraft.Local.Count + 1;
+                var aircraft = _context.Aircraft.Add(entity);
                 _context.SaveChanges();
+                return aircraft;
             }
 
-            return aircraftExists;
+            return entity;
         }
     }
 }

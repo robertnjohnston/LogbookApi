@@ -1,31 +1,29 @@
-﻿using System;
-using System.Data.Entity;
-using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using LogbookApi;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Collections.ObjectModel;
+using System.Data.Entity;
+using LogbookApiTest.TestData;
 
 namespace LogbookApiTest.Providers
 {
     [TestFixture()]
     public class AircraftProviderTests
     {
-        private Mock<jetstrea_LogbookEntities> Context { get; set; }
-        
-        private Mock<IEntityProvider<Aircraft>> MockAircraftProvider { get; set; }
-       
-        private Mock<DbSet<Aircraft>> AircraftDbSet { get; set; }
+        private Mock<jetstrea_LogbookEntities> Context { get; set;  }
+        private Mock<DbSet<Aircraft>> Aircraft { get; set; }
+
 
         [SetUp]
         public void SetupTests()
         {
             Context = new Mock<jetstrea_LogbookEntities>();
-
-            MockAircraftProvider = new Mock<IEntityProvider<Aircraft>>();
-            AircraftDbSet = new Mock<DbSet<Aircraft>>();
+            Aircraft = new Mock<DbSet<Aircraft>>();
+            Context.Setup(m => m.Aircraft).Returns(Aircraft.Object);
         }
 
         [Test]
@@ -46,25 +44,54 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnNullOnNothingFoundId()
         {
-            AircraftDbSet.Setup(m => m.Find(1)).Returns((Aircraft)null);
-            Context.Setup(m => m.Aircraft).Returns(AircraftDbSet.Object);
-
             var result = GetTestSubject().Get(1);
 
             result.Should().Be(null);
         }
 
         [Test]
-        public void ShouldReturnNewAircraftOnNothingFoundName()
+        public void ShouldReturnAnAircraftOnValidId()
         {
-            //AircraftDbSet.Setup(m => m.First(aircraft => aircraft.Name=="F16")).Returns((Aircraft)null);
-            //AircraftDbSet.Setup(m => m.Add(It.IsAny<Aircraft>())).Returns(new Aircraft {Id = 1, Name = "F16"});
-            Context.Setup(m => m.Aircraft.FirstOrDefault(f => f.Name == "F16")).Returns((Aircraft)null);
-            MockAircraftProvider.Setup(m => m.Save(It.IsAny<Aircraft>())).Returns(new Aircraft {Id = 1, Name = "F16"});
+            Aircraft.Setup(m => m.Find(1)).Returns(FlightTestData.Aircraft());
 
-            var result = GetTestSubject().Get("F16");
+            var result = GetTestSubject().Get(1);
 
-            result.Should().BeAssignableTo<Aircraft>();
+            result.ShouldBeEquivalentTo(FlightTestData.Aircraft());
+        }
+
+        [Test]
+        public void ShouldReturnNewAircraftOnSave()
+        {
+            var newAircraft = new Aircraft {Name = "NewAircraft"};
+            Aircraft.Setup(m => m.Add(newAircraft)).Returns(newAircraft);
+            Aircraft.SetupGet(p => p.Local).Returns(new ObservableCollection<Aircraft>());
+            Context.Setup(m => m.Aircraft).Returns(Aircraft.Object);
+            Context.Setup(m => m.SaveChanges());
+
+            var result = GetTestSubject().Save(newAircraft);
+            Context.Verify();
+        }
+
+        [Test]
+        public void ShouldReturnAnotherNewAircraftOnSave()
+        {
+            var newAircraft = new Aircraft { Name = "AnotherNewAircraft" };
+            Aircraft.Setup(m => m.Add(newAircraft)).Returns(newAircraft);
+            Aircraft.SetupGet(p => p.Local).Returns(new ObservableCollection<Aircraft> {new Aircraft {Id=1,Name= "NewAircraft" } });
+            Context.Setup(m => m.Aircraft).Returns(Aircraft.Object);
+            Context.Setup(m => m.SaveChanges());
+
+            var result = GetTestSubject().Save(newAircraft);
+            result.Id.Should().Be(2);
+        }
+
+        [Test]
+        public void ShouldReturnExistingAircraftOnSave()
+        {
+            var aircraft = new Aircraft { Id = 7, Name = "Aircraft" };
+ 
+            var result = GetTestSubject().Save(aircraft);
+            result.ShouldBeEquivalentTo(aircraft);
         }
 
         private IEntityProvider<Aircraft> GetTestSubject()

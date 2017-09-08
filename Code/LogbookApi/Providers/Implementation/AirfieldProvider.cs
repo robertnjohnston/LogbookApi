@@ -20,27 +20,20 @@ namespace LogbookApi.Providers.Implementation
 
         public Airfield Get(int id)
         {
-           return _context.Airfield.First(airfield => airfield.Id == id);
-        }
-
-        public Airfield Get(string name)
-        {
-            var airfieldExists = _context.Airfield.First(airfield => airfield.Name == name) ?? Save(new Airfield() { Name = name });
-
-            return airfieldExists;
+           return _context.Airfield.Find(id);
         }
 
         public Airfield Save(Airfield entity)
         {
-            var airfieldExists = _context.Airfield.First(airfield => airfield.Name == entity.Name);
-
-            if(airfieldExists == null)
+            if (entity.Id == 0)
             {
-                airfieldExists = _context.Airfield.Add(entity);
+                entity.Id = _context.Airfield.Local.Count + 1;
+                var airfield = _context.Airfield.Add(entity);
                 _context.SaveChanges();
+                return airfield;
             }
 
-            return airfieldExists;
+            return entity;
         }
     }
 }

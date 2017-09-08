@@ -8,8 +8,6 @@ namespace LogbookApi.Providers
 
         T Get(int id);
 
-        T Get(string name);
-
         T Save(T entity);
     }
 }

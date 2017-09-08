@@ -291,7 +291,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>LogbookModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Aircraft.cs" />
     <Compile Include="Models\Flight.cs" />
+    <Compile Include="Models\IEntity.cs" />
     <Compile Include="Models\Page.cs" />
     <Compile Include="Page.cs">
       <DependentUpon>LogbookModel.tt</DependentUpon>

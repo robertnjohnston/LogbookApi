@@ -82,7 +82,7 @@
     <Compile Include="Providers\AircraftProviderTests.cs" />
     <Compile Include="Providers\AirfieldProviderTests.cs" />
     <Compile Include="Providers\FlightProviderTests.cs" />
-    <Compile Include="TestData\FlightTestData.cs" />
+    <Compile Include="TestData\Implementation\FlightTestData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
