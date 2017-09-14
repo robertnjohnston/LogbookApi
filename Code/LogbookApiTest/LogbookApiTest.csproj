@@ -82,6 +82,7 @@
     <Compile Include="Providers\AircraftProviderTests.cs" />
     <Compile Include="Providers\AirfieldProviderTests.cs" />
     <Compile Include="Providers\FlightProviderTests.cs" />
+    <Compile Include="Providers\PageProviderTests.cs" />
     <Compile Include="TestData\Implementation\FlightTestData.cs" />
   </ItemGroup>
   <ItemGroup>
