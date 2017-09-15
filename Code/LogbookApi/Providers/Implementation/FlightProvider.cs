@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using LogbookApi.Models;
 using CuttingEdge.Conditions;
+using LogbookApi.Exceptions;
 
 namespace LogbookApi.Providers.Implementation
 {
@@ -24,7 +26,29 @@ namespace LogbookApi.Providers.Implementation
 
         public List<Flight> GetFilteredFlights(FlightFilter filter)
         {
-            throw new System.NotImplementedException();
+
+            if (!filter.IsValid()) throw new InvalidFilterException();
+            switch (filter.FilterType)
+            {
+                case FilterType.Number:
+                    return GetFlightsByNumber(filter.FlightStart, filter.FlightEnd);
+                case FilterType.Date:
+                    return GetFlightsByDate(filter.DateStart, filter.DateEnd);
+                case FilterType.Aircraft:
+                    return GetFlightByAircraft(filter.Aircraft);
+                case FilterType.Airfield:
+                    break;
+                case FilterType.Launch:
+                    break;
+                case FilterType.Crew:
+                    break;
+                case FilterType.Trace:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return new List<Flight>();
         }
 
         public Flight GetFlight(int id)
@@ -42,6 +66,23 @@ namespace LogbookApi.Providers.Implementation
         public void SaveFlight(Flight flight)
         {
             throw new NotImplementedException();
+        }
+
+        private List<Flight> GetFlightByAircraft(int filterAircraftId)
+        {
+            return _context.Flight.Where(flight => flight.AircraftId == filterAircraftId).ToList();
+        }
+
+        private List<Flight> GetFlightsByDate(DateTime filterDateStart, DateTime filterDateEnd)
+        {
+            return _context.Flight.Where(flight => 
+                flight.FlightDate >= filterDateStart && flight.FlightDate <= filterDateEnd).ToList();
+        }
+
+        private List<Flight> GetFlightsByNumber(int filterFlightStart, int filterFlightEnd)
+        {
+            return _context.Flight.Where(flight =>
+                flight.FlightNumber >= filterFlightStart && flight.FlightNumber <= filterFlightEnd).ToList();
         }
     }
 }

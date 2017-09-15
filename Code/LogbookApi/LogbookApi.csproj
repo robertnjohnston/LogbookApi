@@ -175,10 +175,6 @@
     <Reference Include="System.Buffers, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.4.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.NonGeneric">
-      <HintPath>..\packages\System.Collections.NonGeneric.4.3.0\lib\net46\System.Collections.NonGeneric.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -240,6 +236,7 @@
     </Compile>
     <Compile Include="Controllers\FlightController.cs" />
     <Compile Include="Controllers\PageController.cs" />
+    <Compile Include="Exceptions\InvalidFilterException.cs" />
     <Compile Include="Flight.cs">
       <DependentUpon>LogbookModel.tt</DependentUpon>
     </Compile>

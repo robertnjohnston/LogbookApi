@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Data.Entity;
-using System.Data.Entity.Core.Objects;
+using System.Linq;
 using NUnit.Framework;
 using Moq;
 using FluentAssertions;
 using LogbookApi;
+using LogbookApi.Exceptions;
+using LogbookApi.Models;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
 using LogbookApiTest.TestData;
@@ -31,6 +33,8 @@ namespace LogbookApiTest.Providers
             MockAirfieldProvider = new Mock<IEntityProvider<Airfield>>();
 
             MockAircraftProvider = new Mock<IEntityProvider<Aircraft>>();
+
+            SetupDbSet();
         }
 
         [Test]
@@ -67,9 +71,6 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnNullOnNothingFound()
         {
-            FlightDbSet.Setup(m => m.Find(1)).Returns((Flight) null);
-            Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
-
             var result = GetTestSubject().GetFlight(99);
 
             result.Should().Be(null);
@@ -85,6 +86,95 @@ namespace LogbookApiTest.Providers
             result.ShouldBeEquivalentTo(resultData);
         }
 
+        [Test]
+        public void ShouldThrowInvalidFilterException()
+        {
+            var fp = GetTestSubject();
+
+            Action act = () => fp.GetFilteredFlights(new FlightFilter());
+
+            act.ShouldThrow<InvalidFilterException>();
+        }
+
+        [Test]
+        public void ShouldReturnAnEmptyListOnNothingFoundNumber()
+        {
+            SetupDbSet();
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(
+                    new FlightFilter {FilterType = FilterType.Number, FlightStart = 9999, FlightEnd = 10000});
+
+            result.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void ShouldReturnAListOfFlightsNumber()
+        {
+            SetupDbSet();
+            FlightDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Flights());
+            Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
+
+            var fp = GetTestSubject();
+            
+            var result =
+                fp.GetFilteredFlights(
+                    new FlightFilter { FilterType = FilterType.Number, FlightStart = 1, FlightEnd = 10 });
+
+            result.Count.Should().Be(10);
+        }
+
+        [Test]
+        public void ShouldReturnAnEmptyListOnNothingFoundDate()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(
+                    new FlightFilter { FilterType = FilterType.Date, DateStart = DateTime.Now.AddDays(30), DateEnd = DateTime.Now.AddDays(31) });
+
+            result.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void ShouldReturnAListOfFlightsDate()
+        {
+            Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
+
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(
+                    new FlightFilter { FilterType = FilterType.Date, DateStart = new DateTime(1900, 1,1), DateEnd = new DateTime(2020, 12,31) });
+
+            result.Count.Should().Be(10);
+        }
+
+        [Test]
+        public void ShouldReturnAnEmptyListOnNothingFoundAircraft()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(
+                    new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 99 });
+
+            result.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void ShouldReturnAListOfFlightsAircraft()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(
+                    new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 1 });
+
+            result.Count.Should().Be(10);
+        }
+
         private Flight SetupTest()
         {
             var testFlight = FlightTestData.Flight(1);
@@ -95,6 +185,22 @@ namespace LogbookApiTest.Providers
             testFlight.Airfield = FlightTestData.Airfield().Name;
             testFlight.Aircraft = FlightTestData.Aircraft().Name;
             return testFlight;
+        }
+
+        private void SetupDbSet()
+        {
+            FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.Provider)
+                .Returns(FlightTestData.Data.AsQueryable().Provider);
+            FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.Expression)
+                .Returns(FlightTestData.Data.AsQueryable().Expression);
+            FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.ElementType)
+                .Returns(FlightTestData.Data.AsQueryable().ElementType);
+            FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.GetEnumerator())
+                .Returns(FlightTestData.Data.AsQueryable().GetEnumerator());
+
+            FlightDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Flights());
+            Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
+
         }
 
         private IFlightProvider GetTestSubject()

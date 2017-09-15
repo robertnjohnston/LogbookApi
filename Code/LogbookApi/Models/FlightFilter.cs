@@ -61,7 +61,6 @@ namespace LogbookApi.Models
                     return ValidateCrew();
                 case FilterType.Launch:
                     return ValidateLaunch();
-                    break;
                 case FilterType.Trace:
                     TraceFile = true;
                     break;
