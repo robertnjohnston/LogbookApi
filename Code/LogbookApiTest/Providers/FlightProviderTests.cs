@@ -147,7 +147,7 @@ namespace LogbookApiTest.Providers
 
             var result =
                 fp.GetFilteredFlights(
-                    new FlightFilter { FilterType = FilterType.Date, DateStart = new DateTime(1900, 1,1), DateEnd = new DateTime(2020, 12,31) });
+                    new FlightFilter { FilterType = FilterType.Date, DateStart = new DateTime(1900, 1,1), DateEnd = new DateTime(1988, 12,31) });
 
             result.Count.Should().Be(10);
         }
