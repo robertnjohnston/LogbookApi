@@ -10,6 +10,7 @@ using LogbookApi.Models;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
 using LogbookApiTest.TestData;
+using LogbookApiTest.TestData.Implementation;
 
 namespace LogbookApiTest.Providers
 {
@@ -190,17 +191,16 @@ namespace LogbookApiTest.Providers
         private void SetupDbSet()
         {
             FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.Provider)
-                .Returns(FlightTestData.Data.AsQueryable().Provider);
+                .Returns(FlightTestData.FlightData.AsQueryable().Provider);
             FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.Expression)
-                .Returns(FlightTestData.Data.AsQueryable().Expression);
+                .Returns(FlightTestData.FlightData.AsQueryable().Expression);
             FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.ElementType)
-                .Returns(FlightTestData.Data.AsQueryable().ElementType);
+                .Returns(FlightTestData.FlightData.AsQueryable().ElementType);
             FlightDbSet.As<IQueryable<Flight>>().Setup(m => m.GetEnumerator())
-                .Returns(FlightTestData.Data.AsQueryable().GetEnumerator());
+                .Returns(FlightTestData.FlightData.AsQueryable().GetEnumerator());
 
             FlightDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Flights());
             Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
-
         }
 
         private IFlightProvider GetTestSubject()

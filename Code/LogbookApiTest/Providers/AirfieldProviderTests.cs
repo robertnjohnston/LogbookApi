@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Linq;
 using FluentAssertions;
 using LogbookApi;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
 using LogbookApiTest.TestData;
+using LogbookApiTest.TestData.Implementation;
 using Moq;
 using NUnit.Framework;
 
@@ -16,15 +18,15 @@ namespace LogbookApiTest.Providers
     public class AirfieldProviderTests
     {
         private Mock<jetstrea_LogbookEntities> Context { get; set; }
-        private Mock<DbSet<Airfield>> Airfield { get; set; }
+        private Mock<DbSet<Airfield>> AirfieldDbSet { get; set; }
 
 
         [SetUp]
         public void SetupTests()
         {
             Context = new Mock<jetstrea_LogbookEntities>();
-            Airfield = new Mock<DbSet<Airfield>>();
-            Context.Setup(m => m.Airfield).Returns(Airfield.Object);
+            AirfieldDbSet = new Mock<DbSet<Airfield>>();
+            SetupDbSet();
         }
 
         [Test]
@@ -53,7 +55,7 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnAnAirfieldOnValidId()
         {
-            Airfield.Setup(m => m.Find(1)).Returns(FlightTestData.Airfield());
+            AirfieldDbSet.Setup(m => m.Find(1)).Returns(FlightTestData.Airfield());
 
             var result = GetTestSubject().Get(1);
 
@@ -64,9 +66,7 @@ namespace LogbookApiTest.Providers
         public void ShouldReturnNewAirfieldOnSave()
         {
             var newAirfield = new Airfield { Name = "NewAirfield" };
-            Airfield.Setup(m => m.Add(newAirfield)).Returns(newAirfield);
-            Airfield.SetupGet(p => p.Local).Returns(new ObservableCollection<Airfield>());
-            Context.Setup(m => m.Airfield).Returns(Airfield.Object);
+            AirfieldDbSet.Setup(m => m.Add(newAirfield)).Returns(newAirfield);
             Context.Setup(m => m.SaveChanges());
 
             var result = GetTestSubject().Save(newAirfield);
@@ -77,13 +77,11 @@ namespace LogbookApiTest.Providers
         public void ShouldReturnAnotherNewAirfieldOnSave()
         {
             var newAirfield = new Airfield { Name = "AnotherNewAirfield" };
-            Airfield.Setup(m => m.Add(newAirfield)).Returns(newAirfield);
-            Airfield.SetupGet(p => p.Local).Returns(new ObservableCollection<Airfield> { new Airfield { Id = 1, Name = "NewAirfield" } });
-            Context.Setup(m => m.Airfield).Returns(Airfield.Object);
+            AirfieldDbSet.Setup(m => m.Add(newAirfield)).Returns(newAirfield);
             Context.Setup(m => m.SaveChanges());
 
             var result = GetTestSubject().Save(newAirfield);
-            result.Id.Should().Be(2);
+            result.Id.Should().Be(4);
         }
 
         [Test]
@@ -99,6 +97,19 @@ namespace LogbookApiTest.Providers
         {
             return new AirfieldProvider(Context.Object);
         }
+        private void SetupDbSet()
+        {
+            AirfieldDbSet.As<IQueryable<Airfield>>().Setup(m => m.Provider)
+                         .Returns(FlightTestData.AirfieldData.AsQueryable().Provider);
+            AirfieldDbSet.As<IQueryable<Airfield>>().Setup(m => m.Expression)
+                         .Returns(FlightTestData.AirfieldData.AsQueryable().Expression);
+            AirfieldDbSet.As<IQueryable<Airfield>>().Setup(m => m.ElementType)
+                         .Returns(FlightTestData.AirfieldData.AsQueryable().ElementType);
+            AirfieldDbSet.As<IQueryable<Airfield>>().Setup(m => m.GetEnumerator())
+                         .Returns(FlightTestData.AirfieldData.AsQueryable().GetEnumerator());
 
+            AirfieldDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Airfields);
+            Context.Setup(m => m.Airfield).Returns(AirfieldDbSet.Object);
+        }
     }
 }

@@ -56,8 +56,7 @@ namespace LogbookApi.Providers.Implementation
             var flightExists = _context.Flight.Find(id);
             if(flightExists != null)
             {
-                flightExists.Airfield = _airfieldProvider.Get(flightExists.AirfieldId)?.Name;
-                flightExists.Aircraft = _aircraftProvider.Get(flightExists.AircraftId)?.Name;
+                GetAirfieldAndAircraft(flightExists);
             }
 
             return flightExists;
@@ -70,19 +69,36 @@ namespace LogbookApi.Providers.Implementation
 
         private List<Flight> GetFlightByAircraft(int filterAircraftId)
         {
-            return _context.Flight.Where(flight => flight.AircraftId == filterAircraftId).ToList();
+            var flights = _context.Flight.Where(flight => flight.AircraftId == filterAircraftId).ToList();
+
+            flights.ForEach(GetAirfieldAndAircraft);
+            return flights;
         }
+
+
 
         private List<Flight> GetFlightsByDate(DateTime filterDateStart, DateTime filterDateEnd)
         {
-            return _context.Flight.Where(flight => 
+            var flights =  _context.Flight.Where(flight => 
                 flight.FlightDate >= filterDateStart && flight.FlightDate <= filterDateEnd).ToList();
+
+            flights.ForEach(GetAirfieldAndAircraft);
+            return flights;
         }
 
         private List<Flight> GetFlightsByNumber(int filterFlightStart, int filterFlightEnd)
         {
-            return _context.Flight.Where(flight =>
+            var flights = _context.Flight.Where(flight =>
                 flight.FlightNumber >= filterFlightStart && flight.FlightNumber <= filterFlightEnd).ToList();
+
+            flights.ForEach(GetAirfieldAndAircraft);
+            return flights;
+        }
+
+        private void GetAirfieldAndAircraft(Flight flight)
+        {
+            flight.Airfield = _airfieldProvider.Get(flight.AirfieldId)?.Name;
+            flight.Aircraft = _aircraftProvider.Get(flight.AircraftId)?.Name;
         }
     }
 }

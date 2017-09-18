@@ -5,9 +5,10 @@ using LogbookApi.Providers.Implementation;
 using Moq;
 using NUnit.Framework;
 using System;
-using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Linq;
 using LogbookApiTest.TestData;
+using LogbookApiTest.TestData.Implementation;
 
 namespace LogbookApiTest.Providers
 {
@@ -15,15 +16,15 @@ namespace LogbookApiTest.Providers
     public class AircraftProviderTests
     {
         private Mock<jetstrea_LogbookEntities> Context { get; set;  }
-        private Mock<DbSet<Aircraft>> Aircraft { get; set; }
+        private Mock<DbSet<Aircraft>> AircraftDbSet { get; set; }
 
 
         [SetUp]
         public void SetupTests()
         {
             Context = new Mock<jetstrea_LogbookEntities>();
-            Aircraft = new Mock<DbSet<Aircraft>>();
-            Context.Setup(m => m.Aircraft).Returns(Aircraft.Object);
+            AircraftDbSet = new Mock<DbSet<Aircraft>>();
+            SetupDbSet();
         }
 
         [Test]
@@ -52,7 +53,7 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnAnAircraftOnValidId()
         {
-            Aircraft.Setup(m => m.Find(1)).Returns(FlightTestData.Aircraft());
+            AircraftDbSet.Setup(m => m.Find(1)).Returns(FlightTestData.Aircraft());
 
             var result = GetTestSubject().Get(1);
 
@@ -62,10 +63,8 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnNewAircraftOnSave()
         {
-            var newAircraft = new Aircraft {Name = "NewAircraft"};
-            Aircraft.Setup(m => m.Add(newAircraft)).Returns(newAircraft);
-            Aircraft.SetupGet(p => p.Local).Returns(new ObservableCollection<Aircraft>());
-            Context.Setup(m => m.Aircraft).Returns(Aircraft.Object);
+            var newAircraft = new Aircraft {Name = "Puchasz" };
+            AircraftDbSet.Setup(m => m.Add(newAircraft)).Returns(newAircraft);
             Context.Setup(m => m.SaveChanges());
 
             var result = GetTestSubject().Save(newAircraft);
@@ -75,20 +74,18 @@ namespace LogbookApiTest.Providers
         [Test]
         public void ShouldReturnAnotherNewAircraftOnSave()
         {
-            var newAircraft = new Aircraft { Name = "AnotherNewAircraft" };
-            Aircraft.Setup(m => m.Add(newAircraft)).Returns(newAircraft);
-            Aircraft.SetupGet(p => p.Local).Returns(new ObservableCollection<Aircraft> {new Aircraft {Id=1,Name= "NewAircraft" } });
-            Context.Setup(m => m.Aircraft).Returns(Aircraft.Object);
+            var newAircraft = new Aircraft { Name = "Cirrus" };
+            AircraftDbSet.Setup(m => m.Add(newAircraft)).Returns(newAircraft);
             Context.Setup(m => m.SaveChanges());
 
             var result = GetTestSubject().Save(newAircraft);
-            result.Id.Should().Be(2);
+            result.Id.Should().Be(4);
         }
 
         [Test]
         public void ShouldReturnExistingAircraftOnSave()
         {
-            var aircraft = new Aircraft { Id = 7, Name = "Aircraft" };
+            var aircraft = new Aircraft { Id = 7, Name = "Puchasz" };
  
             var result = GetTestSubject().Save(aircraft);
             result.ShouldBeEquivalentTo(aircraft);
@@ -97,6 +94,21 @@ namespace LogbookApiTest.Providers
         private IEntityProvider<Aircraft> GetTestSubject()
         {
             return new AircraftProvider(Context.Object);
+        }
+
+        private void SetupDbSet()
+        {
+            AircraftDbSet.As<IQueryable<Aircraft>>().Setup(m => m.Provider)
+                       .Returns(FlightTestData.AircraftData.AsQueryable().Provider);
+            AircraftDbSet.As<IQueryable<Flight>>().Setup(m => m.Expression)
+                       .Returns(FlightTestData.FlightData.AsQueryable().Expression);
+            AircraftDbSet.As<IQueryable<Flight>>().Setup(m => m.ElementType)
+                       .Returns(FlightTestData.FlightData.AsQueryable().ElementType);
+            AircraftDbSet.As<IQueryable<Flight>>().Setup(m => m.GetEnumerator())
+                       .Returns(FlightTestData.FlightData.AsQueryable().GetEnumerator());
+
+            AircraftDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Aircrafts);
+            Context.Setup(m => m.Aircraft).Returns(AircraftDbSet.Object);
         }
     }
 }
