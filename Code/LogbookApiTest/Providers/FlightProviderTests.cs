@@ -9,7 +9,6 @@ using LogbookApi.Exceptions;
 using LogbookApi.Models;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
-using LogbookApiTest.TestData;
 using LogbookApiTest.TestData.Implementation;
 
 namespace LogbookApiTest.Providers
@@ -174,6 +173,90 @@ namespace LogbookApiTest.Providers
                     new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 1 });
 
             result.Count.Should().Be(10);
+        }
+
+        [Test]
+        public void ShouldReturnAnEmptyListOnNothingFoundAirfield()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Airfield, Airfield = 99 });
+
+            result.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void ShouldReturnAListOfFlightsAirfield()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Airfield, Airfield = 1 });
+
+            result.Count.Should().Be(10);
+        }
+
+        [Test]
+        public void ShouldReturnAnEmptyListOnNothingFoundLaunch()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Launch, Launch = "X" });
+
+            result.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void ShouldReturnAListOfFlightsLaunch()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Launch, Launch = "A" });
+
+            result.Count.Should().Be(20);
+        }
+
+        [Test]
+        public void ShouldReturnAnEmptyListOnNothingFoundCrew()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Crew, Crew = 0 });
+
+            result.Count.Should().Be(0);
+        }
+
+        [Test]
+        public void ShouldReturnAListOfFlightsCrew()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Crew, Crew = 1 });
+
+            result.Count.Should().Be(10);
+        }
+
+        [Test]
+        public void ShouldThrowInvalidFlightExceptionOnSave()
+        {
+            var fp = GetTestSubject();
+
+            Action act = () => fp.SaveFlight(new Flight());
+
+            act.ShouldThrow<InvalidFlightException>().And.Message.Length.Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void ShouldSaveFlight()
+        {
+            var fp = GetTestSubject();
+
+            Action act = () => fp.SaveFlight(new Flight());
         }
 
         private Flight SetupTest()

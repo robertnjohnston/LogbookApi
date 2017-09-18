@@ -9,6 +9,8 @@ namespace LogbookApi.Providers
 
         Flight GetFlight(int id);
 
-        void SaveFlight(Flight flight);
+        Flight SaveFlight(Flight flight);
+
+        int GetLastFlightNumber();
     }
 }

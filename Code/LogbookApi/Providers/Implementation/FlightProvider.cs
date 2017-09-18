@@ -37,18 +37,14 @@ namespace LogbookApi.Providers.Implementation
                 case FilterType.Aircraft:
                     return GetFlightByAircraft(filter.Aircraft);
                 case FilterType.Airfield:
-                    break;
+                    return GetFlightByAirfield(filter.Airfield);
                 case FilterType.Launch:
-                    break;
+                    return GetFlightByLaunch(filter.Launch);
                 case FilterType.Crew:
-                    break;
-                case FilterType.Trace:
-                    break;
+                    return GetFlightByCrew(filter.Crew);
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    return new List<Flight>();
             }
-
-            return new List<Flight>();
         }
 
         public Flight GetFlight(int id)
@@ -62,11 +58,62 @@ namespace LogbookApi.Providers.Implementation
             return flightExists;
         }
         
-        public void SaveFlight(Flight flight)
+        public Flight SaveFlight(Flight flight)
         {
-            throw new NotImplementedException();
+            if (!flight.IsValid()) throw new InvalidFlightException(flight.Error);
+
+            if (flight.AircraftId == 0)
+            {
+                flight.AircraftId = _aircraftProvider.Save(new Aircraft { Name = flight.Aircraft }).Id;
+            }
+            if (flight.AirfieldId == 0)
+            {
+                flight.AirfieldId = _airfieldProvider.Save(new Airfield { Name = flight.Airfield }).Id;
+            }
+
+            if (flight.FlightNumber == 0)
+            {
+                flight.FlightNumber = GetLastFlightNumber() + 1;
+                _context.Flight.Add(flight);
+            }
+            else
+            {
+                var flightToUpdate = _context.Flight.Find(flight.FlightNumber);
+                _context.Entry(flightToUpdate).CurrentValues.SetValues(flight);
+            }
+
+            _context.SaveChanges();
+            return flight;
         }
 
+        public int GetLastFlightNumber()
+        {
+            return _context.Flight.Max(flight => flight.FlightNumber);
+        }
+
+        private List<Flight> GetFlightByCrew(int filterCrew)
+        {
+            var flights = _context.Flight.Where(flight => flight.PilotInCharge == filterCrew).ToList();
+
+            flights.ForEach(GetAirfieldAndAircraft);
+            return flights;
+        }
+
+        private List<Flight> GetFlightByLaunch(string filterLaunch)
+        {
+            var flights = _context.Flight.Where(flight => flight.LaunchType.ToLower() == filterLaunch.ToLower()).ToList();
+
+            flights.ForEach(GetAirfieldAndAircraft);
+            return flights;
+        }
+
+        private List<Flight> GetFlightByAirfield(int filterAirfieldId)
+        {
+            var flights = _context.Flight.Where(flight => flight.AirfieldId == filterAirfieldId).ToList();
+
+            flights.ForEach(GetAirfieldAndAircraft);
+            return flights;
+        }
         private List<Flight> GetFlightByAircraft(int filterAircraftId)
         {
             var flights = _context.Flight.Where(flight => flight.AircraftId == filterAircraftId).ToList();
@@ -74,8 +121,6 @@ namespace LogbookApi.Providers.Implementation
             flights.ForEach(GetAirfieldAndAircraft);
             return flights;
         }
-
-
 
         private List<Flight> GetFlightsByDate(DateTime filterDateStart, DateTime filterDateEnd)
         {
