@@ -242,6 +242,18 @@ namespace LogbookApiTest.Providers
         }
 
         [Test]
+        public void ShouldReturnEmptyListOnFilterNumberandAircraft()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Number | FilterType.Aircraft, FlightStart = 1, FlightEnd = 10, Aircraft = 2});
+
+            result.Count.Should().Be(0);
+        }
+
+
+        [Test]
         public void ShouldThrowInvalidFlightExceptionOnSave()
         {
             var fp = GetTestSubject();

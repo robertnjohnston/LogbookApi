@@ -43,31 +43,19 @@ namespace LogbookApi.Models
 
         private bool FilterIsValid()
         {
-            if(FilterType == (FilterType.Date & FilterType.Number)) return false;
+            if(FilterType == (FilterType.Date & FilterType.Number) || FilterType==FilterType.None) return false;
 
-            switch(FilterType)
-            {
-                case FilterType.None:
-                    return false;
-                case FilterType.Date:
-                    return ValidateDates();
-                case FilterType.Number:
-                    return ValidateNumbers();
-                case FilterType.Aircraft:
-                    return ValidateId(Aircraft);
-                case FilterType.Airfield:
-                    return ValidateId(Airfield);
-                case FilterType.Crew:
-                    return ValidateCrew();
-                case FilterType.Launch:
-                    return ValidateLaunch();
-                case FilterType.Trace:
-                    TraceFile = true;
-                    break;
-                default:
-                    return false;
-            }
-            return true;
+            var result = true;
+
+            if(((int) FilterType & (int) FilterType.Number) == (int) FilterType.Number) result = ValidateNumbers();
+            if(((int) FilterType & (int) FilterType.Date) == (int) FilterType.Date) result = ValidateDates();
+            if(((int) FilterType & (int) FilterType.Aircraft) == (int) FilterType.Aircraft) result = ValidateId(Aircraft);
+            if(((int) FilterType & (int) FilterType.Airfield) == (int) FilterType.Airfield) result = ValidateId(Airfield);
+            if(((int) FilterType & (int) FilterType.Launch) == (int) FilterType.Launch) result = ValidateLaunch();
+            if(((int) FilterType & (int) FilterType.Crew) == (int) FilterType.Crew) result = ValidateCrew();
+            if(((int) FilterType & (int) FilterType.Trace) == (int) FilterType.Trace) TraceFile = true;
+
+            return result;
         }
 
         private bool ValidateLaunch()

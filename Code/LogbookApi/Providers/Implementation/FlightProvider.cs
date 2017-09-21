@@ -4,6 +4,7 @@ using System.Linq;
 using LogbookApi.Models;
 using CuttingEdge.Conditions;
 using LogbookApi.Exceptions;
+using Microsoft.Practices.ObjectBuilder2;
 
 namespace LogbookApi.Providers.Implementation
 {
@@ -26,25 +27,21 @@ namespace LogbookApi.Providers.Implementation
 
         public List<Flight> GetFilteredFlights(FlightFilter filter)
         {
-
             if (!filter.IsValid()) throw new InvalidFilterException();
-            switch (filter.FilterType)
-            {
-                case FilterType.Number:
-                    return GetFlightsByNumber(filter.FlightStart, filter.FlightEnd);
-                case FilterType.Date:
-                    return GetFlightsByDate(filter.DateStart, filter.DateEnd);
-                case FilterType.Aircraft:
-                    return GetFlightByAircraft(filter.Aircraft);
-                case FilterType.Airfield:
-                    return GetFlightByAirfield(filter.Airfield);
-                case FilterType.Launch:
-                    return GetFlightByLaunch(filter.Launch);
-                case FilterType.Crew:
-                    return GetFlightByCrew(filter.Crew);
-                default:
-                    return new List<Flight>();
-            }
+            
+            var flights = GetAllFlights();
+
+            if(((int)filter.FilterType & (int)FilterType.Number) == (int)FilterType.Number) flights = GetFlightsByNumber(flights, filter);
+            if(((int)filter.FilterType & (int)FilterType.Date) == (int)FilterType.Date) flights = GetFlightsByDate(flights, filter);
+            if(((int)filter.FilterType & (int)FilterType.Aircraft) == (int)FilterType.Aircraft) flights = GetFlightByAircraft(flights, filter);
+            if(((int)filter.FilterType & (int)FilterType.Airfield) == (int)FilterType.Airfield) flights = GetFlightByAirfield(flights, filter);
+            if(((int)filter.FilterType & (int)FilterType.Launch) == (int)FilterType.Launch) flights = GetFlightByLaunch(flights, filter);
+            if(((int)filter.FilterType & (int)FilterType.Crew) == (int)FilterType.Crew) flights = GetFlightByCrew(flights, filter);
+            if(((int)filter.FilterType & (int)FilterType.Trace) == (int)FilterType.Trace) flights = GetFlightsWithTraceFiles(flights);
+
+            flights.ForEach(GetAirfieldAndAircraft);
+
+            return flights;
         }
 
         public Flight GetFlight(int id)
@@ -91,53 +88,43 @@ namespace LogbookApi.Providers.Implementation
             return _context.Flight.Max(flight => flight.FlightNumber);
         }
 
-        private List<Flight> GetFlightByCrew(int filterCrew)
+        private List<Flight> GetFlightsWithTraceFiles(IEnumerable<Flight> flights)
         {
-            var flights = _context.Flight.Where(flight => flight.PilotInCharge == filterCrew).ToList();
-
-            flights.ForEach(GetAirfieldAndAircraft);
-            return flights;
+            return flights.Where(flight => _context.Trace.Any(trace => trace.FlightNumber == flight.FlightNumber)).ToList();
         }
 
-        private List<Flight> GetFlightByLaunch(string filterLaunch)
+        private List<Flight> GetFlightByCrew(IEnumerable<Flight> flights, FlightFilter filter)
         {
-            var flights = _context.Flight.Where(flight => flight.LaunchType.ToLower() == filterLaunch.ToLower()).ToList();
-
-            flights.ForEach(GetAirfieldAndAircraft);
-            return flights;
+            return flights.Where(flight => flight.PilotInCharge == filter.Crew).ToList();
         }
 
-        private List<Flight> GetFlightByAirfield(int filterAirfieldId)
+        private List<Flight> GetFlightByLaunch(IEnumerable<Flight> flights, FlightFilter filter)
         {
-            var flights = _context.Flight.Where(flight => flight.AirfieldId == filterAirfieldId).ToList();
-
-            flights.ForEach(GetAirfieldAndAircraft);
-            return flights;
-        }
-        private List<Flight> GetFlightByAircraft(int filterAircraftId)
-        {
-            var flights = _context.Flight.Where(flight => flight.AircraftId == filterAircraftId).ToList();
-
-            flights.ForEach(GetAirfieldAndAircraft);
-            return flights;
+            return flights.Where(flight => flight.LaunchType.ToLower() == filter.Launch.ToLower()).ToList();
         }
 
-        private List<Flight> GetFlightsByDate(DateTime filterDateStart, DateTime filterDateEnd)
+        private List<Flight> GetFlightByAirfield(IEnumerable<Flight> flights, FlightFilter filter)
         {
-            var flights =  _context.Flight.Where(flight => 
-                flight.FlightDate >= filterDateStart && flight.FlightDate <= filterDateEnd).ToList();
-
-            flights.ForEach(GetAirfieldAndAircraft);
-            return flights;
+            return flights.Where(flight => flight.AirfieldId == filter.Airfield).ToList();
+        }
+        private List<Flight> GetFlightByAircraft(IEnumerable<Flight> flights, FlightFilter filter)
+        {
+            return flights.Where(flight => flight.AircraftId == filter.Aircraft).ToList();
         }
 
-        private List<Flight> GetFlightsByNumber(int filterFlightStart, int filterFlightEnd)
+        private List<Flight> GetFlightsByDate(IEnumerable<Flight> flights, FlightFilter filter)
         {
-            var flights = _context.Flight.Where(flight =>
-                flight.FlightNumber >= filterFlightStart && flight.FlightNumber <= filterFlightEnd).ToList();
+            return flights.Where(flight => flight.FlightDate >= filter.DateStart && flight.FlightDate <= filter.DateEnd).ToList();
+        }
 
-            flights.ForEach(GetAirfieldAndAircraft);
-            return flights;
+        private List<Flight> GetFlightsByNumber(IEnumerable<Flight> flights, FlightFilter filter)
+        {
+            return flights.Where(flight => flight.FlightNumber >= filter.FlightStart && flight.FlightNumber <= filter.FlightEnd).ToList();
+        }
+
+        private List<Flight> GetAllFlights()
+        {
+            return _context.Flight.ToList();
         }
 
         private void GetAirfieldAndAircraft(Flight flight)
