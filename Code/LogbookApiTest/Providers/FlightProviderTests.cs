@@ -113,8 +113,6 @@ namespace LogbookApiTest.Providers
         public void ShouldReturnAListOfFlightsNumber()
         {
             SetupDbSet();
-            FlightDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Flights());
-            Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
 
             var fp = GetTestSubject();
             
@@ -252,6 +250,49 @@ namespace LogbookApiTest.Providers
             result.Count.Should().Be(0);
         }
 
+        [Test]
+        public void ShouldReturnListOfFlightsOnFilterNumberandAircraft()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Number | FilterType.Aircraft, FlightStart = 1, FlightEnd = 20, Aircraft = 2 });
+
+            result.Count.Should().NotBe(0);
+        }
+
+        [Test]
+        public void ShouldReturnEmptyListOnFilterDateandAircraft()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Date | FilterType.Aircraft, DateStart = new DateTime(1988, 01, 01), DateEnd = new DateTime(1988, 04, 30), Aircraft = 2 });
+
+            result.Count.Should().Be(0);
+        }
+
+
+        [Test]
+        public void ShouldReturnListOfFlightsOnFilterDateandAircraft()
+        {
+            var fp = GetTestSubject();
+
+            var result =
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Date | FilterType.Aircraft, DateStart = new DateTime(1988, 01, 01) , DateEnd = DateTime.Now, Aircraft = 2 });
+
+            result.Count.Should().NotBe(0);
+        }
+
+        [Test]
+        public void ShouldThrowArgumentNullExceptionOnNullFlight()
+        {
+            var fp = GetTestSubject();
+
+            Action act = () => fp.SaveFlight(null);
+
+            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("flight");
+        }
 
         [Test]
         public void ShouldThrowInvalidFlightExceptionOnSave()

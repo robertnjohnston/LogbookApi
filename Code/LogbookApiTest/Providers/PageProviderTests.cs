@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Linq;
 using FluentAssertions;
 using LogbookApi;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
+using LogbookApiTest.TestData.Implementation;
 using Moq;
 using NUnit.Framework;
 
@@ -17,22 +19,16 @@ namespace LogbookApiTest.Providers
         private Mock<DbSet<Flight>> FlightDbSet { get; set; }
 
         private Mock<DbSet<Page>> PageDbSet { get; set; }
-
-        //private Mock<IEntityProvider<Airfield>> MockAirfieldProvider { get; set; }
-
-        //private Mock<IEntityProvider<Aircraft>> MockAircraftProvider { get; set; }
-
+        
         [SetUp]
         public void SetupTests()
         {
             Context = new Mock<jetstrea_LogbookEntities>();
             FlightDbSet = new Mock<DbSet<Flight>>();
             PageDbSet = new Mock<DbSet<Page>>();
-
-            //MockAirfieldProvider = new Mock<IEntityProvider<Airfield>>();
-
-            //MockAircraftProvider = new Mock<IEntityProvider<Aircraft>>();
+            SetupDbSet();
         }
+
         [Test]
         public void ShouldReturnProvider()
         {
@@ -50,14 +46,50 @@ namespace LogbookApiTest.Providers
 
         [Test]
 
+        public void ShouldReturnNullOnPageNotFound()
+        {
+            var result = GetTestSubject().GetPage(99);
+
+            result.Should().BeNull();
+        }
+
+        [Test]
+
         public void ShouldReturnPageOnPageFound()
         {
-            var pp = GetTestSubject();
+            var resultData = SetupTest();
+
+            var result = GetTestSubject().GetPage(1);
+
+            result.Should().Be(resultData);
         }
 
         private IPageProvider GetTestSubject()
         {
             return new PageProvider(Context.Object);
+        }
+
+        private void SetupDbSet()
+        {
+            PageDbSet.As<IQueryable<Page>>().Setup(m => m.Provider)
+                       .Returns(FlightTestData.PageData.AsQueryable().Provider);
+            PageDbSet.As<IQueryable<Page>>().Setup(m => m.Expression)
+                       .Returns(FlightTestData.PageData.AsQueryable().Expression);
+            PageDbSet.As<IQueryable<Page>>().Setup(m => m.ElementType)
+                       .Returns(FlightTestData.PageData.AsQueryable().ElementType);
+            PageDbSet.As<IQueryable<Page>>().Setup(m => m.GetEnumerator())
+                       .Returns(FlightTestData.PageData.AsQueryable().GetEnumerator());
+
+            PageDbSet.SetupGet(p => p.Local).Returns(FlightTestData.Pages);
+            Context.Setup(m => m.Page).Returns(PageDbSet.Object);
+        }
+
+        private Page SetupTest()
+        {
+            var testPage = FlightTestData.Page();
+            PageDbSet.Setup(m => m.Find(1)).Returns(testPage);
+            Context.Setup(m => m.Page).Returns(PageDbSet.Object);
+            return testPage;
         }
     }
 }

@@ -48,9 +48,9 @@ namespace LogbookApiTest.TestData.Implementation
 
         public static readonly List<Page> PageData = new List<Page>
                                                      {
-                                                         new Page{ PageNumber = 1, StartFlight = 1, EndFlight = 10, P1MFlight = 0, P1MMin = 0, P2Flight = 10, P2Min = 147, P1SFlight = 0, P1SMin = 0, Flights = FlightData.GetRange(0,10)},
-                                                         new Page{ PageNumber = 1, StartFlight = 11, EndFlight = 16, P1MFlight = 0, P1MMin = 0, P2Flight = 10, P2Min = 147, P1SFlight = 0, P1SMin = 0, Flights = FlightData.GetRange(0,10)},
-                                                         new Page{ PageNumber = 1, StartFlight = 17, EndFlight = 20, P1MFlight = 0, P1MMin = 0, P2Flight = 10, P2Min = 147, P1SFlight = 0, P1SMin = 0, Flights = FlightData.GetRange(0,10)}
+                                                         new Page{ PageNumber = 1, StartFlight = 1, EndFlight = 10, P1MFlight = 0, P1MMin = 0, P2Flight = 10, P2Min = 147, P1SFlight = 0, P1SMin = 0, Flights = FlightData.GetRange(0,9)},
+                                                         new Page{ PageNumber = 1, StartFlight = 11, EndFlight = 16, P1MFlight = 0, P1MMin = 0, P2Flight = 10, P2Min = 147, P1SFlight = 0, P1SMin = 0, Flights = FlightData.GetRange(10,6)},
+                                                         new Page{ PageNumber = 1, StartFlight = 17, EndFlight = 20, P1MFlight = 0, P1MMin = 0, P2Flight = 10, P2Min = 147, P1SFlight = 0, P1SMin = 0, Flights = FlightData.GetRange(16,4)}
                                                      };
 
         public static Page Page()
@@ -67,7 +67,7 @@ namespace LogbookApiTest.TestData.Implementation
                        P2Min = 147,
                        P1SFlight = 0,
                        P1SMin = 0,
-                       Flights = FlightData
+                       Flights = FlightData.Where(flight => flight.FlightNumber > 0 && flight.FlightNumber <11).ToList()
                    };
         }
 

@@ -5,8 +5,10 @@ namespace LogbookApi.Providers
 {
     public interface IPageProvider
     {
-        Task<Page> GetPage(int page);
+        Page GetPage(int page);
 
-        Task SavePage(Page page);
+        Page SavePage(Page page);
+
+        int GetLastPageNumber();
     }
 }

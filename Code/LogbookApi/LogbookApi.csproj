@@ -238,6 +238,7 @@
     <Compile Include="Controllers\PageController.cs" />
     <Compile Include="Exceptions\InvalidFilterException.cs" />
     <Compile Include="Exceptions\InvalidFlightException.cs" />
+    <Compile Include="Exceptions\InvalidPageException.cs" />
     <Compile Include="Flight.cs">
       <DependentUpon>LogbookModel.tt</DependentUpon>
     </Compile>

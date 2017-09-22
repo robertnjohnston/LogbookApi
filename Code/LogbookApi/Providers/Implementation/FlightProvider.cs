@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using LogbookApi.Models;
 using CuttingEdge.Conditions;
 using LogbookApi.Exceptions;
-using Microsoft.Practices.ObjectBuilder2;
 
 namespace LogbookApi.Providers.Implementation
 {
@@ -27,7 +25,7 @@ namespace LogbookApi.Providers.Implementation
 
         public List<Flight> GetFilteredFlights(FlightFilter filter)
         {
-            if (!filter.IsValid()) throw new InvalidFilterException();
+            if (!filter.IsValid()) throw new InvalidFilterException("");
             
             var flights = GetAllFlights();
 
@@ -57,6 +55,8 @@ namespace LogbookApi.Providers.Implementation
         
         public Flight SaveFlight(Flight flight)
         {
+            Condition.Requires(flight, nameof(flight)).IsNotNull();
+
             if (!flight.IsValid()) throw new InvalidFlightException(flight.Error);
 
             if (flight.AircraftId == 0)

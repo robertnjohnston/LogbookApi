@@ -45,17 +45,17 @@ namespace LogbookApi.Models
         {
             if(FilterType == (FilterType.Date & FilterType.Number) || FilterType==FilterType.None) return false;
 
-            var result = true;
+            var isValid = true;
 
-            if(((int) FilterType & (int) FilterType.Number) == (int) FilterType.Number) result = ValidateNumbers();
-            if(((int) FilterType & (int) FilterType.Date) == (int) FilterType.Date) result = ValidateDates();
-            if(((int) FilterType & (int) FilterType.Aircraft) == (int) FilterType.Aircraft) result = ValidateId(Aircraft);
-            if(((int) FilterType & (int) FilterType.Airfield) == (int) FilterType.Airfield) result = ValidateId(Airfield);
-            if(((int) FilterType & (int) FilterType.Launch) == (int) FilterType.Launch) result = ValidateLaunch();
-            if(((int) FilterType & (int) FilterType.Crew) == (int) FilterType.Crew) result = ValidateCrew();
-            if(((int) FilterType & (int) FilterType.Trace) == (int) FilterType.Trace) TraceFile = true;
+            if(((int) FilterType & (int) FilterType.Number) == (int) FilterType.Number) isValid = ValidateNumbers();
+            if(isValid && ((int) FilterType & (int) FilterType.Date) == (int) FilterType.Date) isValid = ValidateDates();
+            if(isValid && ((int) FilterType & (int) FilterType.Aircraft) == (int) FilterType.Aircraft) isValid = ValidateId(Aircraft);
+            if(isValid && ((int) FilterType & (int) FilterType.Airfield) == (int) FilterType.Airfield) isValid = ValidateId(Airfield);
+            if(isValid && ((int) FilterType & (int) FilterType.Launch) == (int) FilterType.Launch) isValid = ValidateLaunch();
+            if(isValid && ((int) FilterType & (int) FilterType.Crew) == (int) FilterType.Crew) isValid = ValidateCrew();
+            if(isValid && ((int) FilterType & (int) FilterType.Trace) == (int) FilterType.Trace) TraceFile = true;
 
-            return result;
+            return isValid;
         }
 
         private bool ValidateLaunch()
