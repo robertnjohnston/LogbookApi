@@ -3,6 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using FluentAssertions;
 using LogbookApi;
+using LogbookApi.Exceptions;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
 using LogbookApiTest.TestData.Implementation;
@@ -54,7 +55,6 @@ namespace LogbookApiTest.Providers
         }
 
         [Test]
-
         public void ShouldReturnPageOnPageFound()
         {
             var resultData = SetupTest();
@@ -62,6 +62,26 @@ namespace LogbookApiTest.Providers
             var result = GetTestSubject().GetPage(1);
 
             result.Should().Be(resultData);
+        }
+
+        [Test]
+        public void ShouldThrowArgumentNullExceptionOnSaveWithNullPage()
+        {
+            var pp = GetTestSubject();
+            
+            Action act = () => pp.SavePage(null);
+
+            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("page");
+        }
+
+        [Test]
+        public void ShouldThrowInvalidPageExceptionOnSaveWithInvalidpage()
+        {
+            var pp = GetTestSubject();
+
+            Action act = () => pp.SavePage(new Page());
+
+            act.ShouldThrow<InvalidPageException>();
         }
 
         private IPageProvider GetTestSubject()

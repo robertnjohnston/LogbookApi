@@ -1,5 +1,4 @@
-﻿using System;
-using CuttingEdge.Conditions;
+﻿using CuttingEdge.Conditions;
 using LogbookApi.Exceptions;
 
 namespace LogbookApi.Providers.Implementation
