@@ -7,6 +7,8 @@ namespace LogbookApi.Providers
     {
         List<Flight> GetFilteredFlights(FlightFilter filter);
 
+        List<Flight> GetFlightsByPage(int id);
+
         Flight GetFlight(int id);
 
         Flight SaveFlight(Flight flight);

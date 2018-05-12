@@ -44,6 +44,17 @@ namespace LogbookApi.Controllers
             return ((List<Flight>)flights).Any() ? Ok(flights) : NotFound();
         }
 
+        [HttpGet]
+        [Route("FlightsByPage/{id}")]
+        public IHttpActionResult GetPageFlights(int id)
+        {
+            if (id <= 0) return NotFound();
+
+            dynamic flights = _flightProvider.GetFlightsByPage(id);
+
+            return ((List<Flight>)flights).Any() ? Ok(flights) : NotFound();
+        }
+
         [HttpPost]
         [Route("Save")]
         public IHttpActionResult Post(Flight flight)

@@ -42,6 +42,11 @@ namespace LogbookApi.Providers.Implementation
             return flights;
         }
 
+        public List<Flight> GetFlightsByPage(int id)
+        {
+            return new List<Flight>();
+        }
+
         public Flight GetFlight(int id)
         {
             var flightExists = _context.Flight.Find(id);
