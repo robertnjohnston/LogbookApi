@@ -10,7 +10,6 @@ using LogbookApi;
 using LogbookApi.Controllers;
 using LogbookApi.Models;
 using LogbookApi.Providers;
-using LogbookApiTest.TestData;
 using LogbookApiTest.TestData.Implementation;
 using Moq;
 using Newtonsoft.Json;

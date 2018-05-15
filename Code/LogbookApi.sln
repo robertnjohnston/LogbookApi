@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogbookApi", "LogbookApi\Lo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LogbookApiTest", "LogbookApiTest\LogbookApiTest.csproj", "{2E22E60A-6375-4D66-A63A-E2E93BD8A08F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnityOfWork", "UnityOfWork\UnityOfWork.csproj", "{077549E5-7EE2-4DF5-B3D8-93A4D1816B5C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +23,15 @@ Global
 		{2E22E60A-6375-4D66-A63A-E2E93BD8A08F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E22E60A-6375-4D66-A63A-E2E93BD8A08F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E22E60A-6375-4D66-A63A-E2E93BD8A08F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{077549E5-7EE2-4DF5-B3D8-93A4D1816B5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{077549E5-7EE2-4DF5-B3D8-93A4D1816B5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{077549E5-7EE2-4DF5-B3D8-93A4D1816B5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{077549E5-7EE2-4DF5-B3D8-93A4D1816B5C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {773302D4-9FDE-4616-968E-B6A0B521FDF1}
 	EndGlobalSection
 EndGlobal
