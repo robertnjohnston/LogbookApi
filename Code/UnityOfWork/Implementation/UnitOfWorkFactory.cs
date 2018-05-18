@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UnityOfWork
+namespace LogbookApi.UnityOfWork.Implementation
 {
     public class UnitOfWorkFactory : IUnitOfWorkFactory
     {

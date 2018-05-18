@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace UnityOfWork
+namespace LogbookApi.UnityOfWork
 {
     public interface IUnitOfWorkAsync : IDisposable
     {

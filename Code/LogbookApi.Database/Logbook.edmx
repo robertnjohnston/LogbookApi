@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="jetstrea_LogbookModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Aircraft">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Airfield">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Flight">
+          <Key>
+            <PropertyRef Name="FlightNumber" />
+          </Key>
+          <Property Name="FlightNumber" Type="int" Nullable="false" />
+          <Property Name="FlightDate" Type="datetime" Nullable="false" />
+          <Property Name="AirfieldId" Type="int" Nullable="false" />
+          <Property Name="AircraftId" Type="int" Nullable="false" />
+          <Property Name="AircraftReg" Type="varchar" MaxLength="10" />
+          <Property Name="LaunchType" Type="char" MaxLength="1" Nullable="false" />
+          <Property Name="DurationMin" Type="int" Nullable="false" />
+          <Property Name="DistanceFlown" Type="int" />
+          <Property Name="Declared" Type="bit" />
+          <Property Name="PilotInCharge" Type="int" Nullable="false" />
+          <Property Name="Notes" Type="varchar" MaxLength="512" />
+        </EntityType>
+        <EntityType Name="Page">
+          <Key>
+            <PropertyRef Name="PageNumber" />
+          </Key>
+          <Property Name="PageNumber" Type="int" Nullable="false" />
+          <Property Name="StartFlight" Type="int" Nullable="false" />
+          <Property Name="EndFlight" Type="int" Nullable="false" />
+          <Property Name="TotalMin" Type="int" Nullable="false" />
+          <Property Name="P1SMin" Type="int" Nullable="false" />
+          <Property Name="P1SFlight" Type="int" Nullable="false" />
+          <Property Name="P1MMin" Type="int" Nullable="false" />
+          <Property Name="P1MFlight" Type="int" Nullable="false" />
+          <Property Name="P2Min" Type="int" Nullable="false" />
+          <Property Name="P2Flight" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'jetstrea_Logbook.dbo.Test' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Totals">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="TotalMin" Type="int" Nullable="false" />
+          <Property Name="P1SMin" Type="int" Nullable="false" />
+          <Property Name="P1SFlight" Type="int" Nullable="false" />
+          <Property Name="P1MMin" Type="int" Nullable="false" />
+          <Property Name="P1MFlight" Type="int" Nullable="false" />
+          <Property Name="P2Min" Type="int" Nullable="false" />
+          <Property Name="P2Flight" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="DateCreated" Type="datetime" Nullable="false" />
+          <Property Name="Recalc" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Trace">
+          <Key>
+            <PropertyRef Name="FlightNumber" />
+          </Key>
+          <Property Name="FlightNumber" Type="int" Nullable="false" />
+          <Property Name="TraceFile" Type="varchar" MaxLength="512" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Flight_Aircraft">
+          <End Role="Aircraft" Type="Self.Aircraft" Multiplicity="1" />
+          <End Role="Flight" Type="Self.Flight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Aircraft">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flight">
+              <PropertyRef Name="AircraftId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Flight_Airfield">
+          <End Role="Airfield" Type="Self.Airfield" Multiplicity="1" />
+          <End Role="Flight" Type="Self.Flight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Airfield">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Flight">
+              <PropertyRef Name="AirfieldId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Flight_Trace">
+          <End Role="Trace" Type="Self.Trace" Multiplicity="1" />
+          <End Role="Flight" Type="Self.Flight" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Trace">
+              <PropertyRef Name="FlightNumber" />
+            </Principal>
+            <Dependent Role="Flight">
+              <PropertyRef Name="FlightNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="jetstrea_LogbookModelStoreContainer">
+          <EntitySet Name="Aircraft" EntityType="Self.Aircraft" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Airfield" EntityType="Self.Airfield" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Flight" EntityType="Self.Flight" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Page" EntityType="Self.Page" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Totals" EntityType="Self.Totals" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Trace" EntityType="Self.Trace" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Flight_Aircraft" Association="Self.FK_Flight_Aircraft">
+            <End Role="Aircraft" EntitySet="Aircraft" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flight_Airfield" Association="Self.FK_Flight_Airfield">
+            <End Role="Airfield" EntitySet="Airfield" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flight_Trace" Association="Self.FK_Flight_Trace">
+            <End Role="Trace" EntitySet="Trace" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="jetstrea_LogbookModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Aircraft">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="Self.FK_Flight_Aircraft" FromRole="Aircraft" ToRole="Flight" />
+        </EntityType>
+        <EntityType Name="Airfield">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="Self.FK_Flight_Airfield" FromRole="Airfield" ToRole="Flight" />
+        </EntityType>
+        <EntityType Name="Flight">
+          <Key>
+            <PropertyRef Name="FlightNumber" />
+          </Key>
+          <Property Name="FlightNumber" Type="Int32" Nullable="false" />
+          <Property Name="FlightDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="AircraftReg" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="LaunchType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+          <Property Name="DurationMin" Type="Int32" Nullable="false" />
+          <Property Name="DistanceFlown" Type="Int32" />
+          <Property Name="Declared" Type="Boolean" />
+          <Property Name="PilotInCharge" Type="Int32" Nullable="false" />
+          <Property Name="Notes" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Aircraft" Relationship="Self.FK_Flight_Aircraft" FromRole="Flight" ToRole="Aircraft" />
+          <NavigationProperty Name="Airfield" Relationship="Self.FK_Flight_Airfield" FromRole="Flight" ToRole="Airfield" />
+          <NavigationProperty Name="Trace" Relationship="Self.FK_Flight_Trace" FromRole="Flight" ToRole="Trace" />
+        </EntityType>
+        <EntityType Name="Page">
+          <Key>
+            <PropertyRef Name="PageNumber" />
+          </Key>
+          <Property Name="PageNumber" Type="Int32" Nullable="false" />
+          <Property Name="StartFlight" Type="Int32" Nullable="false" />
+          <Property Name="EndFlight" Type="Int32" Nullable="false" />
+          <Property Name="TotalMin" Type="Int32" Nullable="false" />
+          <Property Name="P1SMin" Type="Int32" Nullable="false" />
+          <Property Name="P1SFlight" Type="Int32" Nullable="false" />
+          <Property Name="P1MMin" Type="Int32" Nullable="false" />
+          <Property Name="P1MFlight" Type="Int32" Nullable="false" />
+          <Property Name="P2Min" Type="Int32" Nullable="false" />
+          <Property Name="P2Flight" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Totals">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="TotalMin" Type="Int32" Nullable="false" />
+          <Property Name="P1SMin" Type="Int32" Nullable="false" />
+          <Property Name="P1SFlight" Type="Int32" Nullable="false" />
+          <Property Name="P1MMin" Type="Int32" Nullable="false" />
+          <Property Name="P1MFlight" Type="Int32" Nullable="false" />
+          <Property Name="P2Min" Type="Int32" Nullable="false" />
+          <Property Name="P2Flight" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Recalc" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Trace">
+          <Key>
+            <PropertyRef Name="FlightNumber" />
+          </Key>
+          <Property Name="FlightNumber" Type="Int32" Nullable="false" />
+          <Property Name="TraceFile" Type="String" MaxLength="512" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="Self.FK_Flight_Trace" FromRole="Trace" ToRole="Flight" />
+        </EntityType>
+        <Association Name="FK_Flight_Aircraft">
+          <End Role="Aircraft" Type="Self.Aircraft" Multiplicity="1" />
+          <End Role="Flight" Type="Self.Flight" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_Flight_Airfield">
+          <End Role="Airfield" Type="Self.Airfield" Multiplicity="1" />
+          <End Role="Flight" Type="Self.Flight" Multiplicity="*" />
+        </Association>
+        <Association Name="FK_Flight_Trace">
+          <End Role="Trace" Type="Self.Trace" Multiplicity="1" />
+          <End Role="Flight" Type="Self.Flight" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Trace">
+              <PropertyRef Name="FlightNumber" />
+            </Principal>
+            <Dependent Role="Flight">
+              <PropertyRef Name="FlightNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="jetstrea_LogbookEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Aircraft" EntityType="Self.Aircraft" />
+          <EntitySet Name="Airfield" EntityType="Self.Airfield" />
+          <EntitySet Name="Flight" EntityType="Self.Flight" />
+          <EntitySet Name="Page" EntityType="Self.Page" />
+          <EntitySet Name="Totals" EntityType="Self.Totals" />
+          <EntitySet Name="Trace" EntityType="Self.Trace" />
+          <AssociationSet Name="FK_Flight_Aircraft" Association="Self.FK_Flight_Aircraft">
+            <End Role="Aircraft" EntitySet="Aircraft" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flight_Airfield" Association="Self.FK_Flight_Airfield">
+            <End Role="Airfield" EntitySet="Airfield" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flight_Trace" Association="Self.FK_Flight_Trace">
+            <End Role="Trace" EntitySet="Trace" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="jetstrea_LogbookModelStoreContainer" CdmEntityContainer="jetstrea_LogbookEntities">
+          <EntitySetMapping Name="Aircraft">
+            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Aircraft">
+              <MappingFragment StoreEntitySet="Aircraft">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Airfield">
+            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Airfield">
+              <MappingFragment StoreEntitySet="Airfield">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Flight">
+            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Flight">
+              <MappingFragment StoreEntitySet="Flight">
+                <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
+                <ScalarProperty Name="FlightDate" ColumnName="FlightDate" />
+                <ScalarProperty Name="AircraftReg" ColumnName="AircraftReg" />
+                <ScalarProperty Name="LaunchType" ColumnName="LaunchType" />
+                <ScalarProperty Name="DurationMin" ColumnName="DurationMin" />
+                <ScalarProperty Name="DistanceFlown" ColumnName="DistanceFlown" />
+                <ScalarProperty Name="Declared" ColumnName="Declared" />
+                <ScalarProperty Name="PilotInCharge" ColumnName="PilotInCharge" />
+                <ScalarProperty Name="Notes" ColumnName="Notes" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Page">
+            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Page">
+              <MappingFragment StoreEntitySet="Page">
+                <ScalarProperty Name="PageNumber" ColumnName="PageNumber" />
+                <ScalarProperty Name="StartFlight" ColumnName="StartFlight" />
+                <ScalarProperty Name="EndFlight" ColumnName="EndFlight" />
+                <ScalarProperty Name="TotalMin" ColumnName="TotalMin" />
+                <ScalarProperty Name="P1SMin" ColumnName="P1SMin" />
+                <ScalarProperty Name="P1SFlight" ColumnName="P1SFlight" />
+                <ScalarProperty Name="P1MMin" ColumnName="P1MMin" />
+                <ScalarProperty Name="P1MFlight" ColumnName="P1MFlight" />
+                <ScalarProperty Name="P2Min" ColumnName="P2Min" />
+                <ScalarProperty Name="P2Flight" ColumnName="P2Flight" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Totals">
+            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Totals">
+              <MappingFragment StoreEntitySet="Totals">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="TotalMin" ColumnName="TotalMin" />
+                <ScalarProperty Name="P1SMin" ColumnName="P1SMin" />
+                <ScalarProperty Name="P1SFlight" ColumnName="P1SFlight" />
+                <ScalarProperty Name="P1MMin" ColumnName="P1MMin" />
+                <ScalarProperty Name="P1MFlight" ColumnName="P1MFlight" />
+                <ScalarProperty Name="P2Min" ColumnName="P2Min" />
+                <ScalarProperty Name="P2Flight" ColumnName="P2Flight" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="Recalc" ColumnName="Recalc" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Trace">
+            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Trace">
+              <MappingFragment StoreEntitySet="Trace">
+                <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
+                <ScalarProperty Name="TraceFile" ColumnName="TraceFile" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="FK_Flight_Aircraft" TypeName="jetstrea_LogbookModel.FK_Flight_Aircraft" StoreEntitySet="Flight">
+            <EndProperty Name="Aircraft">
+              <ScalarProperty Name="Id" ColumnName="AircraftId" />
+            </EndProperty>
+            <EndProperty Name="Flight">
+              <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="FK_Flight_Airfield" TypeName="jetstrea_LogbookModel.FK_Flight_Airfield" StoreEntitySet="Flight">
+            <EndProperty Name="Airfield">
+              <ScalarProperty Name="Id" ColumnName="AirfieldId" />
+            </EndProperty>
+            <EndProperty Name="Flight">
+              <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
+            </EndProperty>
+          </AssociationSetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

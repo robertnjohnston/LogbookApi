@@ -1,4 +1,4 @@
-﻿namespace UnityOfWork
+﻿namespace LogbookApi.UnityOfWork.Implementation
 {
     public class UnitOfWorkFactoryProvider : IUnitOfWorkFactoryProvider
     {

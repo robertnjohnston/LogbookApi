@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace UnityOfWork
+namespace LogbookApi.UnityOfWork
 {
     //protected IUnitOfWorkAsync GetUnitOfWorkAsync(Guid organisationId)
     //{

@@ -3,7 +3,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace UnityOfWork
+namespace LogbookApi.UnityOfWork.Implementation
 {
     internal sealed class RepositoryAsync<T> : IRepositoryAsync<T> where T : class
     {

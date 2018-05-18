@@ -90,9 +90,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LogbookApi\LogbookApi.csproj">
+    <ProjectReference Include="..\LogbookApi\LogbookApi.MicroService.csproj">
       <Project>{e3c3f6a9-d90c-49a3-8071-59fd879181d2}</Project>
-      <Name>LogbookApi</Name>
+      <Name>LogbookApi.MicroService</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
