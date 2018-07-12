@@ -27,5 +27,6 @@ namespace LogbookApi.Database
         public virtual Aircraft Aircraft { get; set; }
         public virtual Airfield Airfield { get; set; }
         public virtual Trace Trace { get; set; }
+        public virtual Page Page { get; set; }
     }
 }

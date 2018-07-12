@@ -7,13 +7,14 @@
       <Diagram DiagramId="4455c6e8af064012b443e5c0f536c423" Name="Diagram1">
         <EntityTypeShape EntityType="jetstrea_LogbookModel.Aircraft" Width="1.5" PointX="0.75" PointY="1.875" IsExpanded="true" />
         <EntityTypeShape EntityType="jetstrea_LogbookModel.Airfield" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
-        <EntityTypeShape EntityType="jetstrea_LogbookModel.Flight" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="jetstrea_LogbookModel.Flight" Width="1.5" PointX="2.875" PointY="1" IsExpanded="true" />
         <EntityTypeShape EntityType="jetstrea_LogbookModel.Page" Width="1.5" PointX="5.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="jetstrea_LogbookModel.Totals" Width="1.5" PointX="2.75" PointY="5.75" IsExpanded="true" />
         <EntityTypeShape EntityType="jetstrea_LogbookModel.Trace" Width="1.5" PointX="0.75" PointY="7.375" IsExpanded="true" />
         <AssociationConnector Association="jetstrea_LogbookModel.FK_Flight_Aircraft" ManuallyRouted="false" />
         <AssociationConnector Association="jetstrea_LogbookModel.FK_Flight_Airfield" ManuallyRouted="false" />
         <AssociationConnector Association="jetstrea_LogbookModel.FK_Flight_Trace" ManuallyRouted="false" />
+        <AssociationConnector Association="jetstrea_LogbookModel.FlightPage" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

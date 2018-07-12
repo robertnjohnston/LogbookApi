@@ -14,6 +14,12 @@ namespace LogbookApi.Database
     
     public partial class Page
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Page()
+        {
+            this.Flight = new HashSet<Flight>();
+        }
+    
         public int PageNumber { get; set; }
         public int StartFlight { get; set; }
         public int EndFlight { get; set; }
@@ -24,5 +30,8 @@ namespace LogbookApi.Database
         public int P1MFlight { get; set; }
         public int P2Min { get; set; }
         public int P2Flight { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Flight> Flight { get; set; }
     }
 }

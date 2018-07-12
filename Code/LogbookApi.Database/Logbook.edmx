@@ -168,6 +168,7 @@ warning 6002: The table/view 'jetstrea_Logbook.dbo.Test' does not have a primary
           <NavigationProperty Name="Aircraft" Relationship="Self.FK_Flight_Aircraft" FromRole="Flight" ToRole="Aircraft" />
           <NavigationProperty Name="Airfield" Relationship="Self.FK_Flight_Airfield" FromRole="Flight" ToRole="Airfield" />
           <NavigationProperty Name="Trace" Relationship="Self.FK_Flight_Trace" FromRole="Flight" ToRole="Trace" />
+          <NavigationProperty Name="Page" Relationship="jetstrea_LogbookModel.FlightPage" FromRole="Flight" ToRole="Page" />
         </EntityType>
         <EntityType Name="Page">
           <Key>
@@ -183,6 +184,7 @@ warning 6002: The table/view 'jetstrea_Logbook.dbo.Test' does not have a primary
           <Property Name="P1MFlight" Type="Int32" Nullable="false" />
           <Property Name="P2Min" Type="Int32" Nullable="false" />
           <Property Name="P2Flight" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="jetstrea_LogbookModel.FlightPage" FromRole="Page" ToRole="Flight" />
         </EntityType>
         <EntityType Name="Totals">
           <Key>
@@ -247,7 +249,15 @@ warning 6002: The table/view 'jetstrea_Logbook.dbo.Test' does not have a primary
             <End Role="Trace" EntitySet="Trace" />
             <End Role="Flight" EntitySet="Flight" />
           </AssociationSet>
+          <AssociationSet Name="FlightPage" Association="jetstrea_LogbookModel.FlightPage">
+            <End Role="Flight" EntitySet="Flight" />
+            <End Role="Page" EntitySet="Page" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FlightPage">
+          <End Type="jetstrea_LogbookModel.Flight" Role="Flight" Multiplicity="*" />
+          <End Type="jetstrea_LogbookModel.Page" Role="Page" Multiplicity="1" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
