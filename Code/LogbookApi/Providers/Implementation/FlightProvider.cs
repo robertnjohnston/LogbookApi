@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using LogbookApi.Models;
 using CuttingEdge.Conditions;
+using LogbookApi.Database;
 using LogbookApi.Exceptions;
 
 namespace LogbookApi.Providers.Implementation
@@ -37,14 +39,7 @@ namespace LogbookApi.Providers.Implementation
             if(((int)filter.FilterType & (int)FilterType.Crew) == (int)FilterType.Crew) flights = GetFlightByCrew(flights, filter);
             if(((int)filter.FilterType & (int)FilterType.Trace) == (int)FilterType.Trace) flights = GetFlightsWithTraceFiles(flights);
 
-            flights.ForEach(GetAirfieldAndAircraft);
-
             return flights;
-        }
-
-        public List<Flight> GetFlightsByPage(int id)
-        {
-            return new List<Flight>();
         }
 
         public Flight GetFlight(int id)
@@ -66,11 +61,11 @@ namespace LogbookApi.Providers.Implementation
 
             if (flight.AircraftId == 0)
             {
-                flight.AircraftId = _aircraftProvider.Save(new Aircraft { Name = flight.Aircraft }).Id;
+                flight.AircraftId = _aircraftProvider.Save(new Aircraft { Name = flight.Aircraft.Name }).Id;
             }
             if (flight.AirfieldId == 0)
             {
-                flight.AirfieldId = _airfieldProvider.Save(new Airfield { Name = flight.Airfield }).Id;
+                flight.AirfieldId = _airfieldProvider.Save(new Airfield { Name = flight.Airfield.Name }).Id;
             }
 
             if (flight.FlightNumber == 0)
@@ -95,7 +90,7 @@ namespace LogbookApi.Providers.Implementation
 
         private List<Flight> GetFlightsWithTraceFiles(IEnumerable<Flight> flights)
         {
-            return flights.Where(flight => _context.Trace.Any(trace => trace.FlightNumber == flight.FlightNumber)).ToList();
+            return flights.Where(flight => flight.Trace != null).ToList();
         }
 
         private List<Flight> GetFlightByCrew(IEnumerable<Flight> flights, FlightFilter filter)
@@ -110,11 +105,11 @@ namespace LogbookApi.Providers.Implementation
 
         private List<Flight> GetFlightByAirfield(IEnumerable<Flight> flights, FlightFilter filter)
         {
-            return flights.Where(flight => flight.AirfieldId == filter.Airfield).ToList();
+            return flights.Where(flight => flight.Airfield.Name == filter.Airfield).ToList();
         }
         private List<Flight> GetFlightByAircraft(IEnumerable<Flight> flights, FlightFilter filter)
         {
-            return flights.Where(flight => flight.AircraftId == filter.Aircraft).ToList();
+            return flights.Where(flight => flight.Aircraft.Name.Equals(filter.Aircraft, StringComparison.InvariantCultureIgnoreCase)).ToList();
         }
 
         private List<Flight> GetFlightsByDate(IEnumerable<Flight> flights, FlightFilter filter)
@@ -134,8 +129,8 @@ namespace LogbookApi.Providers.Implementation
 
         private void GetAirfieldAndAircraft(Flight flight)
         {
-            flight.Airfield = _airfieldProvider.Get(flight.AirfieldId)?.Name;
-            flight.Aircraft = _aircraftProvider.Get(flight.AircraftId)?.Name;
+            flight.Airfield = _airfieldProvider.Get(flight.AirfieldId);
+            flight.Aircraft = _aircraftProvider.Get(flight.AircraftId);
         }
     }
 }

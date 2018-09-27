@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using CuttingEdge.Conditions;
+using LogbookApi.Database;
 
 namespace LogbookApi.Providers.Implementation
 {

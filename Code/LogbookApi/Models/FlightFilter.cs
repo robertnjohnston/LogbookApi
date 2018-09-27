@@ -26,9 +26,9 @@ namespace LogbookApi.Models
 
         public DateTime DateEnd { get; set; }
 
-        public int Aircraft { get; set; }
+        public string Aircraft { get; set; }
 
-        public int Airfield { get; set; }
+        public string Airfield { get; set; }
 
         public string Launch { get; set; }
 
@@ -49,8 +49,8 @@ namespace LogbookApi.Models
 
             if(((int) FilterType & (int) FilterType.Number) == (int) FilterType.Number) isValid = ValidateNumbers();
             if(isValid && ((int) FilterType & (int) FilterType.Date) == (int) FilterType.Date) isValid = ValidateDates();
-            if(isValid && ((int) FilterType & (int) FilterType.Aircraft) == (int) FilterType.Aircraft) isValid = ValidateId(Aircraft);
-            if(isValid && ((int) FilterType & (int) FilterType.Airfield) == (int) FilterType.Airfield) isValid = ValidateId(Airfield);
+            if(isValid && ((int) FilterType & (int) FilterType.Aircraft) == (int) FilterType.Aircraft) isValid = ValidateString(Aircraft);
+            if(isValid && ((int) FilterType & (int) FilterType.Airfield) == (int) FilterType.Airfield) isValid = ValidateString(Airfield);
             if(isValid && ((int) FilterType & (int) FilterType.Launch) == (int) FilterType.Launch) isValid = ValidateLaunch();
             if(isValid && ((int) FilterType & (int) FilterType.Crew) == (int) FilterType.Crew) isValid = ValidateCrew();
             if(isValid && ((int) FilterType & (int) FilterType.Trace) == (int) FilterType.Trace) TraceFile = true;
@@ -84,6 +84,11 @@ namespace LogbookApi.Models
         {
             if(DateStart == DateTime.MinValue || DateEnd == DateTime.MinValue) return false;
             return DateStart <= DateEnd;
+        }
+
+        private bool ValidateString(string value)
+        {
+            return !String.IsNullOrWhiteSpace(value);
         }
     }
 }

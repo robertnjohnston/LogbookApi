@@ -12,6 +12,8 @@ namespace LogbookApi.Database
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Core.Objects;
+    using System.Linq;
     
     public partial class jetstrea_LogbookEntities : DbContext
     {
@@ -31,5 +33,217 @@ namespace LogbookApi.Database
         public virtual DbSet<Page> Page { get; set; }
         public virtual DbSet<Totals> Totals { get; set; }
         public virtual DbSet<Trace> Trace { get; set; }
+    
+        public virtual ObjectResult<Nullable<int>> AddEntry(Nullable<int> table, string entry)
+        {
+            var tableParameter = table.HasValue ?
+                new ObjectParameter("table", table) :
+                new ObjectParameter("table", typeof(int));
+    
+            var entryParameter = entry != null ?
+                new ObjectParameter("entry", entry) :
+                new ObjectParameter("entry", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("AddEntry", tableParameter, entryParameter);
+        }
+    
+        public virtual int AddFlightToLastPage(Nullable<int> flightNumber)
+        {
+            var flightNumberParameter = flightNumber.HasValue ?
+                new ObjectParameter("FlightNumber", flightNumber) :
+                new ObjectParameter("FlightNumber", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddFlightToLastPage", flightNumberParameter);
+        }
+    
+        public virtual ObjectResult<GetAircraft_Result> GetAircraft()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetAircraft_Result>("GetAircraft");
+        }
+    
+        public virtual ObjectResult<GetAirfield_Result> GetAirfield()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetAirfield_Result>("GetAirfield");
+        }
+    
+        public virtual ObjectResult<GetAllAircraft_Result> GetAllAircraft()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetAllAircraft_Result>("GetAllAircraft");
+        }
+    
+        public virtual ObjectResult<GetAllAirfield_Result> GetAllAirfield()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetAllAirfield_Result>("GetAllAirfield");
+        }
+    
+        public virtual ObjectResult<getAllFlights_Result> getAllFlights()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getAllFlights_Result>("getAllFlights");
+        }
+    
+        public virtual ObjectResult<GetFlightDetails_Result> GetFlightDetails(Nullable<int> flightNumber)
+        {
+            var flightNumberParameter = flightNumber.HasValue ?
+                new ObjectParameter("FlightNumber", flightNumber) :
+                new ObjectParameter("FlightNumber", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetFlightDetails_Result>("GetFlightDetails", flightNumberParameter);
+        }
+    
+        public virtual ObjectResult<GetFlightsForPage_Result> GetFlightsForPage(Nullable<int> pageNumber)
+        {
+            var pageNumberParameter = pageNumber.HasValue ?
+                new ObjectParameter("PageNumber", pageNumber) :
+                new ObjectParameter("PageNumber", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetFlightsForPage_Result>("GetFlightsForPage", pageNumberParameter);
+        }
+    
+        public virtual ObjectResult<GetLastFlightDetails_Result> GetLastFlightDetails()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetLastFlightDetails_Result>("GetLastFlightDetails");
+        }
+    
+        public virtual ObjectResult<string> GetLaunch()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetLaunch");
+        }
+    
+        public virtual ObjectResult<Nullable<int>> GetNewFlightNumber()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("GetNewFlightNumber");
+        }
+    
+        public virtual ObjectResult<string> GetOwner()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("GetOwner");
+        }
+    
+        public virtual ObjectResult<GetPages_Result> GetPages()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetPages_Result>("GetPages");
+        }
+    
+        public virtual ObjectResult<GetTotals_Result> GetTotals()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetTotals_Result>("GetTotals");
+        }
+    
+        public virtual ObjectResult<LogBookFrontPageSummary_Result> LogBookFrontPageSummary()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<LogBookFrontPageSummary_Result>("LogBookFrontPageSummary");
+        }
+    
+        public virtual int ReCalculatePageTotals()
+        {
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("ReCalculatePageTotals");
+        }
+    
+        public virtual int SaveFlight(Nullable<int> flightNumber, string flightDate, Nullable<int> aircraftID, Nullable<int> airfieldID, string aircraftReg, string launchType, Nullable<int> durationMin, Nullable<int> distanceFlown, Nullable<bool> declared, Nullable<int> pilotInCharge, string notes, string traceFile)
+        {
+            var flightNumberParameter = flightNumber.HasValue ?
+                new ObjectParameter("FlightNumber", flightNumber) :
+                new ObjectParameter("FlightNumber", typeof(int));
+    
+            var flightDateParameter = flightDate != null ?
+                new ObjectParameter("FlightDate", flightDate) :
+                new ObjectParameter("FlightDate", typeof(string));
+    
+            var aircraftIDParameter = aircraftID.HasValue ?
+                new ObjectParameter("AircraftID", aircraftID) :
+                new ObjectParameter("AircraftID", typeof(int));
+    
+            var airfieldIDParameter = airfieldID.HasValue ?
+                new ObjectParameter("AirfieldID", airfieldID) :
+                new ObjectParameter("AirfieldID", typeof(int));
+    
+            var aircraftRegParameter = aircraftReg != null ?
+                new ObjectParameter("AircraftReg", aircraftReg) :
+                new ObjectParameter("AircraftReg", typeof(string));
+    
+            var launchTypeParameter = launchType != null ?
+                new ObjectParameter("LaunchType", launchType) :
+                new ObjectParameter("LaunchType", typeof(string));
+    
+            var durationMinParameter = durationMin.HasValue ?
+                new ObjectParameter("DurationMin", durationMin) :
+                new ObjectParameter("DurationMin", typeof(int));
+    
+            var distanceFlownParameter = distanceFlown.HasValue ?
+                new ObjectParameter("DistanceFlown", distanceFlown) :
+                new ObjectParameter("DistanceFlown", typeof(int));
+    
+            var declaredParameter = declared.HasValue ?
+                new ObjectParameter("Declared", declared) :
+                new ObjectParameter("Declared", typeof(bool));
+    
+            var pilotInChargeParameter = pilotInCharge.HasValue ?
+                new ObjectParameter("PilotInCharge", pilotInCharge) :
+                new ObjectParameter("PilotInCharge", typeof(int));
+    
+            var notesParameter = notes != null ?
+                new ObjectParameter("Notes", notes) :
+                new ObjectParameter("Notes", typeof(string));
+    
+            var traceFileParameter = traceFile != null ?
+                new ObjectParameter("TraceFile", traceFile) :
+                new ObjectParameter("TraceFile", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("SaveFlight", flightNumberParameter, flightDateParameter, aircraftIDParameter, airfieldIDParameter, aircraftRegParameter, launchTypeParameter, durationMinParameter, distanceFlownParameter, declaredParameter, pilotInChargeParameter, notesParameter, traceFileParameter);
+        }
+    
+        public virtual int UpdatePage(Nullable<int> pageNumber, Nullable<int> endFlight)
+        {
+            var pageNumberParameter = pageNumber.HasValue ?
+                new ObjectParameter("PageNumber", pageNumber) :
+                new ObjectParameter("PageNumber", typeof(int));
+    
+            var endFlightParameter = endFlight.HasValue ?
+                new ObjectParameter("EndFlight", endFlight) :
+                new ObjectParameter("EndFlight", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdatePage", pageNumberParameter, endFlightParameter);
+        }
+    
+        public virtual int UpdateTotals(Nullable<int> totalMin, Nullable<int> p1SMin, Nullable<int> p1SFlight, Nullable<int> p1MMin, Nullable<int> p1MFlight, Nullable<int> p2Min, Nullable<int> p2Flight, string name, Nullable<System.DateTime> dateCreated)
+        {
+            var totalMinParameter = totalMin.HasValue ?
+                new ObjectParameter("TotalMin", totalMin) :
+                new ObjectParameter("TotalMin", typeof(int));
+    
+            var p1SMinParameter = p1SMin.HasValue ?
+                new ObjectParameter("P1SMin", p1SMin) :
+                new ObjectParameter("P1SMin", typeof(int));
+    
+            var p1SFlightParameter = p1SFlight.HasValue ?
+                new ObjectParameter("P1SFlight", p1SFlight) :
+                new ObjectParameter("P1SFlight", typeof(int));
+    
+            var p1MMinParameter = p1MMin.HasValue ?
+                new ObjectParameter("P1MMin", p1MMin) :
+                new ObjectParameter("P1MMin", typeof(int));
+    
+            var p1MFlightParameter = p1MFlight.HasValue ?
+                new ObjectParameter("P1MFlight", p1MFlight) :
+                new ObjectParameter("P1MFlight", typeof(int));
+    
+            var p2MinParameter = p2Min.HasValue ?
+                new ObjectParameter("P2Min", p2Min) :
+                new ObjectParameter("P2Min", typeof(int));
+    
+            var p2FlightParameter = p2Flight.HasValue ?
+                new ObjectParameter("P2Flight", p2Flight) :
+                new ObjectParameter("P2Flight", typeof(int));
+    
+            var nameParameter = name != null ?
+                new ObjectParameter("Name", name) :
+                new ObjectParameter("Name", typeof(string));
+    
+            var dateCreatedParameter = dateCreated.HasValue ?
+                new ObjectParameter("DateCreated", dateCreated) :
+                new ObjectParameter("DateCreated", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateTotals", totalMinParameter, p1SMinParameter, p1SFlightParameter, p1MMinParameter, p1MFlightParameter, p2MinParameter, p2FlightParameter, nameParameter, dateCreatedParameter);
+        }
     }
 }

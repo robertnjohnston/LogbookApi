@@ -7,14 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogbookApi
+namespace LogbookApi.Database
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Page
+    public partial class GetPages_Result
     {
-        public int PageNumber { get; set; }
+        public int pageNumber { get; set; }
         public int StartFlight { get; set; }
         public int EndFlight { get; set; }
         public int TotalMin { get; set; }

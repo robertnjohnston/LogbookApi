@@ -1,9 +1,9 @@
 ﻿using System.Web.Http;
 using Microsoft.Owin.Cors;
-using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.WebApi;
 using Owin;
 using Swashbuckle.Application;
+using Unity;
+using Unity.AspNet.WebApi;
 
 namespace LogbookApi
 {

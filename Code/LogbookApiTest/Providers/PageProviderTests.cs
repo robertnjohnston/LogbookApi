@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
-using LogbookApi;
+using LogbookApi.Database;
 using LogbookApi.Exceptions;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
@@ -12,6 +13,7 @@ using NUnit.Framework;
 
 namespace LogbookApiTest.Providers
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture()]
     public class PageProviderTests
     {
@@ -42,7 +44,7 @@ namespace LogbookApiTest.Providers
         {
             Action act = () => new PageProvider(null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("context");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
 
         [Test]
@@ -61,7 +63,7 @@ namespace LogbookApiTest.Providers
 
             var result = GetTestSubject().GetPage(1);
 
-            result.Should().Be(resultData);
+            result.Should().BeEquivalentTo(resultData);
         }
 
         [Test]
@@ -71,7 +73,7 @@ namespace LogbookApiTest.Providers
             
             Action act = () => pp.SavePage(null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("page");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("page");
         }
 
         [Test]
@@ -81,7 +83,7 @@ namespace LogbookApiTest.Providers
 
             Action act = () => pp.SavePage(new Page());
 
-            act.ShouldThrow<InvalidPageException>();
+            act.Should().Throw<InvalidPageException>();
         }
 
         private IPageProvider GetTestSubject()

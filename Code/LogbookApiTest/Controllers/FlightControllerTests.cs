@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Net.Http;
 using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Results;
 using FluentAssertions;
-using LogbookApi;
 using LogbookApi.Controllers;
+using LogbookApi.Database;
 using LogbookApi.Models;
 using LogbookApi.Providers;
 using LogbookApiTest.TestData.Implementation;
@@ -17,6 +18,7 @@ using NUnit.Framework;
 
 namespace LogbookApiTest.Controllers
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture]
     public class FlightControllerTests
     {
@@ -37,7 +39,7 @@ namespace LogbookApiTest.Controllers
         {
             Action act = () => new FlightController(null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("flightProvider");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("flightProvider");
         }
 
         [Test]
@@ -64,7 +66,7 @@ namespace LogbookApiTest.Controllers
         {
             MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(new List<Flight>());
 
-            var result = GetTestSubject().Get((FlightFilter)null) as BadRequestErrorMessageResult;
+            var result = GetTestSubject().Post((FlightFilter)null) as BadRequestErrorMessageResult;
 
             result.Should().NotBe(null);
         }
@@ -74,7 +76,7 @@ namespace LogbookApiTest.Controllers
         {
             MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(new List<Flight>());
             
-            var result = GetTestSubject().Get(new FlightFilter()) as BadRequestErrorMessageResult;
+            var result = GetTestSubject().Post(new FlightFilter()) as BadRequestErrorMessageResult;
 
             result.Should().NotBe(null);
         }
@@ -84,7 +86,7 @@ namespace LogbookApiTest.Controllers
         {
             MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(new List<Flight>());
 
-            var result = GetTestSubject().Get(new FlightFilter {FilterType = FilterType.Airfield, Airfield = 99}) as NotFoundResult;
+            var result = GetTestSubject().Post(new FlightFilter {FilterType = FilterType.Airfield, Airfield = "Test"}) as NotFoundResult;
 
             result.Should().NotBe(null);
         }
@@ -94,7 +96,7 @@ namespace LogbookApiTest.Controllers
         {
             MockFlightProvider.Setup(m => m.GetFilteredFlights(It.IsAny<FlightFilter>())).Returns(FlightTestData.FilteredFlights());
 
-            var result = GetTestSubject().Get(new FlightFilter { FilterType = FilterType.Number, FlightStart = 1, FlightEnd = 3}) as OkNegotiatedContentResult<List<Flight>>;
+            var result = GetTestSubject().Post(new FlightFilter { FilterType = FilterType.Number, FlightStart = 1, FlightEnd = 3}) as OkNegotiatedContentResult<List<Flight>>;
 
             GetContent<List<Flight>>(result).Count.Should().Be(3);
         }
@@ -106,7 +108,7 @@ namespace LogbookApiTest.Controllers
 
             var result = GetTestSubject().Get(3) as OkNegotiatedContentResult<Flight>;
 
-            result.Content.ShouldBeEquivalentTo(FlightTestData.Flight(3));
+            result.Content.Should().BeEquivalentTo(FlightTestData.Flight(3));
         }
 
         [Test]
@@ -132,7 +134,7 @@ namespace LogbookApiTest.Controllers
 
             var content = GetContent<Flight>(result);
 
-            content.ShouldBeEquivalentTo(FlightTestData.Flight(1));
+            content.Should().BeEquivalentTo(FlightTestData.Flight(1));
         }
 
         private FlightController GetTestSubject()

@@ -7,17 +7,18 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogbookApi
+namespace LogbookApi.Database
 {
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     using System.Data.Entity.Core.Objects;
-
-    public partial class jetstrea_LogbookEntities : DbContext
+    using System.Linq;
+    
+    public partial class Entities : DbContext
     {
-        public jetstrea_LogbookEntities()
-            : base("name=jetstrea_LogbookEntities")
+        public Entities()
+            : base("name=Entities")
         {
         }
     
@@ -53,6 +54,71 @@ namespace LogbookApi
                 new ObjectParameter("FlightNumber", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("AddFlightToLastPage", flightNumberParameter);
+        }
+    
+        public virtual int aspnet_WebEvent_LogEvent(string eventId, Nullable<System.DateTime> eventTimeUtc, Nullable<System.DateTime> eventTime, string eventType, Nullable<decimal> eventSequence, Nullable<decimal> eventOccurrence, Nullable<int> eventCode, Nullable<int> eventDetailCode, string message, string applicationPath, string applicationVirtualPath, string machineName, string requestUrl, string exceptionType, string details)
+        {
+            var eventIdParameter = eventId != null ?
+                new ObjectParameter("EventId", eventId) :
+                new ObjectParameter("EventId", typeof(string));
+    
+            var eventTimeUtcParameter = eventTimeUtc.HasValue ?
+                new ObjectParameter("EventTimeUtc", eventTimeUtc) :
+                new ObjectParameter("EventTimeUtc", typeof(System.DateTime));
+    
+            var eventTimeParameter = eventTime.HasValue ?
+                new ObjectParameter("EventTime", eventTime) :
+                new ObjectParameter("EventTime", typeof(System.DateTime));
+    
+            var eventTypeParameter = eventType != null ?
+                new ObjectParameter("EventType", eventType) :
+                new ObjectParameter("EventType", typeof(string));
+    
+            var eventSequenceParameter = eventSequence.HasValue ?
+                new ObjectParameter("EventSequence", eventSequence) :
+                new ObjectParameter("EventSequence", typeof(decimal));
+    
+            var eventOccurrenceParameter = eventOccurrence.HasValue ?
+                new ObjectParameter("EventOccurrence", eventOccurrence) :
+                new ObjectParameter("EventOccurrence", typeof(decimal));
+    
+            var eventCodeParameter = eventCode.HasValue ?
+                new ObjectParameter("EventCode", eventCode) :
+                new ObjectParameter("EventCode", typeof(int));
+    
+            var eventDetailCodeParameter = eventDetailCode.HasValue ?
+                new ObjectParameter("EventDetailCode", eventDetailCode) :
+                new ObjectParameter("EventDetailCode", typeof(int));
+    
+            var messageParameter = message != null ?
+                new ObjectParameter("Message", message) :
+                new ObjectParameter("Message", typeof(string));
+    
+            var applicationPathParameter = applicationPath != null ?
+                new ObjectParameter("ApplicationPath", applicationPath) :
+                new ObjectParameter("ApplicationPath", typeof(string));
+    
+            var applicationVirtualPathParameter = applicationVirtualPath != null ?
+                new ObjectParameter("ApplicationVirtualPath", applicationVirtualPath) :
+                new ObjectParameter("ApplicationVirtualPath", typeof(string));
+    
+            var machineNameParameter = machineName != null ?
+                new ObjectParameter("MachineName", machineName) :
+                new ObjectParameter("MachineName", typeof(string));
+    
+            var requestUrlParameter = requestUrl != null ?
+                new ObjectParameter("RequestUrl", requestUrl) :
+                new ObjectParameter("RequestUrl", typeof(string));
+    
+            var exceptionTypeParameter = exceptionType != null ?
+                new ObjectParameter("ExceptionType", exceptionType) :
+                new ObjectParameter("ExceptionType", typeof(string));
+    
+            var detailsParameter = details != null ?
+                new ObjectParameter("Details", details) :
+                new ObjectParameter("Details", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("aspnet_WebEvent_LogEvent", eventIdParameter, eventTimeUtcParameter, eventTimeParameter, eventTypeParameter, eventSequenceParameter, eventOccurrenceParameter, eventCodeParameter, eventDetailCodeParameter, messageParameter, applicationPathParameter, applicationVirtualPathParameter, machineNameParameter, requestUrlParameter, exceptionTypeParameter, detailsParameter);
         }
     
         public virtual ObjectResult<GetAircraft_Result> GetAircraft()

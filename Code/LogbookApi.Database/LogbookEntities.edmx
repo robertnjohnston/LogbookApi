@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="jetstrea_LogbookModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="jetstrea_LogbookEntities.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Aircraft">
           <Key>
             <PropertyRef Name="Id" />
@@ -34,6 +34,7 @@
           <Property Name="Declared" Type="bit" />
           <Property Name="PilotInCharge" Type="int" Nullable="false" />
           <Property Name="Notes" Type="varchar" MaxLength="512" />
+          <Property Name="PageNumber" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Page">
           <Key>
@@ -116,6 +117,23 @@
         <Function Name="AddFlightToLastPage" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="FlightNumber" Type="int" Mode="In" />
         </Function>
+        <Function Name="aspnet_WebEvent_LogEvent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="EventId" Type="char" Mode="In" />
+          <Parameter Name="EventTimeUtc" Type="datetime" Mode="In" />
+          <Parameter Name="EventTime" Type="datetime" Mode="In" />
+          <Parameter Name="EventType" Type="nvarchar" Mode="In" />
+          <Parameter Name="EventSequence" Type="decimal" Mode="In" />
+          <Parameter Name="EventOccurrence" Type="decimal" Mode="In" />
+          <Parameter Name="EventCode" Type="int" Mode="In" />
+          <Parameter Name="EventDetailCode" Type="int" Mode="In" />
+          <Parameter Name="Message" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationPath" Type="nvarchar" Mode="In" />
+          <Parameter Name="ApplicationVirtualPath" Type="nvarchar" Mode="In" />
+          <Parameter Name="MachineName" Type="nvarchar" Mode="In" />
+          <Parameter Name="RequestUrl" Type="nvarchar" Mode="In" />
+          <Parameter Name="ExceptionType" Type="nvarchar" Mode="In" />
+          <Parameter Name="Details" Type="ntext" Mode="In" />
+        </Function>
         <Function Name="GetAircraft" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetAirfield" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="GetAllAircraft" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
@@ -180,7 +198,7 @@
           <Parameter Name="Name" Type="varchar" Mode="In" />
           <Parameter Name="DateCreated" Type="datetime" Mode="In" />
         </Function>
-        <EntityContainer Name="jetstrea_LogbookModelStoreContainer">
+        <EntityContainer Name="jetstrea_LogbookEntitiesStoreContainer">
           <EntitySet Name="Aircraft" EntityType="Self.Aircraft" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Airfield" EntityType="Self.Airfield" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Flight" EntityType="Self.Flight" Schema="dbo" store:Type="Tables" />
@@ -204,13 +222,14 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="jetstrea_LogbookModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="jetstrea_LogbookEntities" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Aircraft">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="Self.FK_Flight_Aircraft" FromRole="Aircraft" ToRole="Flight" />
         </EntityType>
         <EntityType Name="Airfield">
           <Key>
@@ -218,6 +237,7 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="Self.FK_Flight_Airfield" FromRole="Airfield" ToRole="Flight" />
         </EntityType>
         <EntityType Name="Flight">
           <Key>
@@ -234,6 +254,12 @@
           <Property Name="Declared" Type="Boolean" />
           <Property Name="PilotInCharge" Type="Int32" Nullable="false" />
           <Property Name="Notes" Type="String" MaxLength="512" FixedLength="false" Unicode="false" />
+          <Property Name="PageNumber" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Aircraft" Relationship="Self.FK_Flight_Aircraft" FromRole="Flight" ToRole="Aircraft" />
+          <NavigationProperty Name="Airfield" Relationship="Self.FK_Flight_Airfield" FromRole="Flight" ToRole="Airfield" />
+          <NavigationProperty Name="Trace" Relationship="Self.FK_Flight_Trace" FromRole="Flight" ToRole="Trace" />
+          <NavigationProperty Name="Page" Relationship="jetstrea_LogbookEntities.PageFlight" FromRole="Flight" ToRole="Page" />
+          <Property Name="PagePageNumber" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="Page">
           <Key>
@@ -249,6 +275,7 @@
           <Property Name="P1MFlight" Type="Int32" Nullable="false" />
           <Property Name="P2Min" Type="Int32" Nullable="false" />
           <Property Name="P2Flight" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="jetstrea_LogbookEntities.PageFlight" FromRole="Page" ToRole="Flight" />
         </EntityType>
         <EntityType Name="Totals">
           <Key>
@@ -272,6 +299,7 @@
           </Key>
           <Property Name="FlightNumber" Type="Int32" Nullable="false" />
           <Property Name="TraceFile" Type="String" MaxLength="512" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Flight" Relationship="Self.FK_Flight_Trace" FromRole="Trace" ToRole="Flight" />
         </EntityType>
         <Association Name="FK_Flight_Aircraft">
           <End Role="Aircraft" Type="Self.Aircraft" Multiplicity="1" />
@@ -309,7 +337,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="jetstrea_LogbookEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Aircraft" EntityType="Self.Aircraft" />
           <EntitySet Name="Airfield" EntityType="Self.Airfield" />
           <EntitySet Name="Flight" EntityType="Self.Flight" />
@@ -335,24 +363,41 @@
           <FunctionImport Name="AddFlightToLastPage">
             <Parameter Name="FlightNumber" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="GetAircraft" ReturnType="Collection(jetstrea_LogbookModel.GetAircraft_Result)" />
-          <FunctionImport Name="GetAirfield" ReturnType="Collection(jetstrea_LogbookModel.GetAirfield_Result)" />
-          <FunctionImport Name="GetAllAircraft" ReturnType="Collection(jetstrea_LogbookModel.GetAllAircraft_Result)" />
-          <FunctionImport Name="GetAllAirfield" ReturnType="Collection(jetstrea_LogbookModel.GetAllAirfield_Result)" />
-          <FunctionImport Name="getAllFlights" ReturnType="Collection(jetstrea_LogbookModel.getAllFlights_Result)" />
-          <FunctionImport Name="GetFlightDetails" ReturnType="Collection(jetstrea_LogbookModel.GetFlightDetails_Result)">
+          <FunctionImport Name="aspnet_WebEvent_LogEvent">
+            <Parameter Name="EventId" Mode="In" Type="String" />
+            <Parameter Name="EventTimeUtc" Mode="In" Type="DateTime" />
+            <Parameter Name="EventTime" Mode="In" Type="DateTime" />
+            <Parameter Name="EventType" Mode="In" Type="String" />
+            <Parameter Name="EventSequence" Mode="In" Type="Decimal" />
+            <Parameter Name="EventOccurrence" Mode="In" Type="Decimal" />
+            <Parameter Name="EventCode" Mode="In" Type="Int32" />
+            <Parameter Name="EventDetailCode" Mode="In" Type="Int32" />
+            <Parameter Name="Message" Mode="In" Type="String" />
+            <Parameter Name="ApplicationPath" Mode="In" Type="String" />
+            <Parameter Name="ApplicationVirtualPath" Mode="In" Type="String" />
+            <Parameter Name="MachineName" Mode="In" Type="String" />
+            <Parameter Name="RequestUrl" Mode="In" Type="String" />
+            <Parameter Name="ExceptionType" Mode="In" Type="String" />
+            <Parameter Name="Details" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="GetAircraft" ReturnType="Collection(jetstrea_LogbookEntities.GetAircraft_Result)" />
+          <FunctionImport Name="GetAirfield" ReturnType="Collection(jetstrea_LogbookEntities.GetAirfield_Result)" />
+          <FunctionImport Name="GetAllAircraft" ReturnType="Collection(jetstrea_LogbookEntities.GetAllAircraft_Result)" />
+          <FunctionImport Name="GetAllAirfield" ReturnType="Collection(jetstrea_LogbookEntities.GetAllAirfield_Result)" />
+          <FunctionImport Name="getAllFlights" ReturnType="Collection(jetstrea_LogbookEntities.getAllFlights_Result)" />
+          <FunctionImport Name="GetFlightDetails" ReturnType="Collection(jetstrea_LogbookEntities.GetFlightDetails_Result)">
             <Parameter Name="FlightNumber" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="GetFlightsForPage" ReturnType="Collection(jetstrea_LogbookModel.GetFlightsForPage_Result)">
+          <FunctionImport Name="GetFlightsForPage" ReturnType="Collection(jetstrea_LogbookEntities.GetFlightsForPage_Result)">
             <Parameter Name="PageNumber" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="GetLastFlightDetails" ReturnType="Collection(jetstrea_LogbookModel.GetLastFlightDetails_Result)" />
+          <FunctionImport Name="GetLastFlightDetails" ReturnType="Collection(jetstrea_LogbookEntities.GetLastFlightDetails_Result)" />
           <FunctionImport Name="GetLaunch" ReturnType="Collection(String)" />
           <FunctionImport Name="GetNewFlightNumber" ReturnType="Collection(Int32)" />
           <FunctionImport Name="GetOwner" ReturnType="Collection(String)" />
-          <FunctionImport Name="GetPages" ReturnType="Collection(jetstrea_LogbookModel.GetPages_Result)" />
-          <FunctionImport Name="GetTotals" ReturnType="Collection(jetstrea_LogbookModel.GetTotals_Result)" />
-          <FunctionImport Name="LogBookFrontPageSummary" ReturnType="Collection(jetstrea_LogbookModel.LogBookFrontPageSummary_Result)" />
+          <FunctionImport Name="GetPages" ReturnType="Collection(jetstrea_LogbookEntities.GetPages_Result)" />
+          <FunctionImport Name="GetTotals" ReturnType="Collection(jetstrea_LogbookEntities.GetTotals_Result)" />
+          <FunctionImport Name="LogBookFrontPageSummary" ReturnType="Collection(jetstrea_LogbookEntities.LogBookFrontPageSummary_Result)" />
           <FunctionImport Name="ReCalculatePageTotals" />
           <FunctionImport Name="SaveFlight">
             <Parameter Name="FlightNumber" Mode="In" Type="Int32" />
@@ -383,6 +428,10 @@
             <Parameter Name="Name" Mode="In" Type="String" />
             <Parameter Name="DateCreated" Mode="In" Type="DateTime" />
           </FunctionImport>
+          <AssociationSet Name="PageFlight" Association="jetstrea_LogbookEntities.PageFlight">
+            <End Role="Page" EntitySet="Page" />
+            <End Role="Flight" EntitySet="Flight" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="GetAircraft_Result">
           <Property Type="Int32" Name="ID" Nullable="false" />
@@ -491,14 +540,26 @@
           <Property Type="Int32" Name="P2" Nullable="true" />
           <Property Type="Int32" Name="P2Min" Nullable="true" />
         </ComplexType>
+        <Association Name="PageFlight">
+          <End Type="jetstrea_LogbookEntities.Page" Role="Page" Multiplicity="1" />
+          <End Type="jetstrea_LogbookEntities.Flight" Role="Flight" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Page">
+              <PropertyRef Name="PageNumber" />
+            </Principal>
+            <Dependent Role="Flight">
+              <PropertyRef Name="PagePageNumber" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="jetstrea_LogbookModelStoreContainer" CdmEntityContainer="jetstrea_LogbookEntities">
+        <EntityContainerMapping StorageEntityContainer="jetstrea_LogbookEntitiesStoreContainer" CdmEntityContainer="Entities">
           <EntitySetMapping Name="Aircraft">
-            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Aircraft">
+            <EntityTypeMapping TypeName="jetstrea_LogbookEntities.Aircraft">
               <MappingFragment StoreEntitySet="Aircraft">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -506,7 +567,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Airfield">
-            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Airfield">
+            <EntityTypeMapping TypeName="jetstrea_LogbookEntities.Airfield">
               <MappingFragment StoreEntitySet="Airfield">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -514,7 +575,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Flight">
-            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Flight">
+            <EntityTypeMapping TypeName="jetstrea_LogbookEntities.Flight">
               <MappingFragment StoreEntitySet="Flight">
                 <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
                 <ScalarProperty Name="FlightDate" ColumnName="FlightDate" />
@@ -527,11 +588,12 @@
                 <ScalarProperty Name="Declared" ColumnName="Declared" />
                 <ScalarProperty Name="PilotInCharge" ColumnName="PilotInCharge" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="PageNumber" ColumnName="PageNumber" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Page">
-            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Page">
+            <EntityTypeMapping TypeName="jetstrea_LogbookEntities.Page">
               <MappingFragment StoreEntitySet="Page">
                 <ScalarProperty Name="PageNumber" ColumnName="PageNumber" />
                 <ScalarProperty Name="StartFlight" ColumnName="StartFlight" />
@@ -547,7 +609,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Totals">
-            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Totals">
+            <EntityTypeMapping TypeName="jetstrea_LogbookEntities.Totals">
               <MappingFragment StoreEntitySet="Totals">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="TotalMin" ColumnName="TotalMin" />
@@ -564,58 +626,59 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Trace">
-            <EntityTypeMapping TypeName="jetstrea_LogbookModel.Trace">
+            <EntityTypeMapping TypeName="jetstrea_LogbookEntities.Trace">
               <MappingFragment StoreEntitySet="Trace">
                 <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
                 <ScalarProperty Name="TraceFile" ColumnName="TraceFile" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="AddEntry" FunctionName="jetstrea_LogbookModel.Store.AddEntry" />
-          <FunctionImportMapping FunctionImportName="AddFlightToLastPage" FunctionName="jetstrea_LogbookModel.Store.AddFlightToLastPage" />
-          <FunctionImportMapping FunctionImportName="GetAircraft" FunctionName="jetstrea_LogbookModel.Store.GetAircraft">
+          <FunctionImportMapping FunctionImportName="AddEntry" FunctionName="jetstrea_LogbookEntities.Store.AddEntry" />
+          <FunctionImportMapping FunctionImportName="AddFlightToLastPage" FunctionName="jetstrea_LogbookEntities.Store.AddFlightToLastPage" />
+          <FunctionImportMapping FunctionImportName="aspnet_WebEvent_LogEvent" FunctionName="jetstrea_LogbookEntities.Store.aspnet_WebEvent_LogEvent" />
+          <FunctionImportMapping FunctionImportName="GetAircraft" FunctionName="jetstrea_LogbookEntities.Store.GetAircraft">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetAircraft_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetAircraft_Result">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetAirfield" FunctionName="jetstrea_LogbookModel.Store.GetAirfield">
+          <FunctionImportMapping FunctionImportName="GetAirfield" FunctionName="jetstrea_LogbookEntities.Store.GetAirfield">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetAirfield_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetAirfield_Result">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetAllAircraft" FunctionName="jetstrea_LogbookModel.Store.GetAllAircraft">
+          <FunctionImportMapping FunctionImportName="GetAllAircraft" FunctionName="jetstrea_LogbookEntities.Store.GetAllAircraft">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetAllAircraft_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetAllAircraft_Result">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetAllAirfield" FunctionName="jetstrea_LogbookModel.Store.GetAllAirfield">
+          <FunctionImportMapping FunctionImportName="GetAllAirfield" FunctionName="jetstrea_LogbookEntities.Store.GetAllAirfield">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetAllAirfield_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetAllAirfield_Result">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="getAllFlights" FunctionName="jetstrea_LogbookModel.Store.getAllFlights">
+          <FunctionImportMapping FunctionImportName="getAllFlights" FunctionName="jetstrea_LogbookEntities.Store.getAllFlights">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.getAllFlights_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.getAllFlights_Result">
                 <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
                 <ScalarProperty Name="FlightDate" ColumnName="FlightDate" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetFlightDetails" FunctionName="jetstrea_LogbookModel.Store.GetFlightDetails">
+          <FunctionImportMapping FunctionImportName="GetFlightDetails" FunctionName="jetstrea_LogbookEntities.Store.GetFlightDetails">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetFlightDetails_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetFlightDetails_Result">
                 <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
                 <ScalarProperty Name="FlightDate" ColumnName="FlightDate" />
                 <ScalarProperty Name="AircraftId" ColumnName="AircraftId" />
@@ -635,9 +698,9 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetFlightsForPage" FunctionName="jetstrea_LogbookModel.Store.GetFlightsForPage">
+          <FunctionImportMapping FunctionImportName="GetFlightsForPage" FunctionName="jetstrea_LogbookEntities.Store.GetFlightsForPage">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetFlightsForPage_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetFlightsForPage_Result">
                 <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
                 <ScalarProperty Name="FlightDate" ColumnName="FlightDate" />
                 <ScalarProperty Name="AircraftId" ColumnName="AircraftId" />
@@ -655,9 +718,9 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetLastFlightDetails" FunctionName="jetstrea_LogbookModel.Store.GetLastFlightDetails">
+          <FunctionImportMapping FunctionImportName="GetLastFlightDetails" FunctionName="jetstrea_LogbookEntities.Store.GetLastFlightDetails">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetLastFlightDetails_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetLastFlightDetails_Result">
                 <ScalarProperty Name="FlightNumber" ColumnName="FlightNumber" />
                 <ScalarProperty Name="FlightDate" ColumnName="FlightDate" />
                 <ScalarProperty Name="AircraftId" ColumnName="AircraftId" />
@@ -677,12 +740,12 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetLaunch" FunctionName="jetstrea_LogbookModel.Store.GetLaunch" />
-          <FunctionImportMapping FunctionImportName="GetNewFlightNumber" FunctionName="jetstrea_LogbookModel.Store.GetNewFlightNumber" />
-          <FunctionImportMapping FunctionImportName="GetOwner" FunctionName="jetstrea_LogbookModel.Store.GetOwner" />
-          <FunctionImportMapping FunctionImportName="GetPages" FunctionName="jetstrea_LogbookModel.Store.GetPages">
+          <FunctionImportMapping FunctionImportName="GetLaunch" FunctionName="jetstrea_LogbookEntities.Store.GetLaunch" />
+          <FunctionImportMapping FunctionImportName="GetNewFlightNumber" FunctionName="jetstrea_LogbookEntities.Store.GetNewFlightNumber" />
+          <FunctionImportMapping FunctionImportName="GetOwner" FunctionName="jetstrea_LogbookEntities.Store.GetOwner" />
+          <FunctionImportMapping FunctionImportName="GetPages" FunctionName="jetstrea_LogbookEntities.Store.GetPages">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetPages_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetPages_Result">
                 <ScalarProperty Name="pageNumber" ColumnName="pageNumber" />
                 <ScalarProperty Name="StartFlight" ColumnName="StartFlight" />
                 <ScalarProperty Name="EndFlight" ColumnName="EndFlight" />
@@ -696,9 +759,9 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="GetTotals" FunctionName="jetstrea_LogbookModel.Store.GetTotals">
+          <FunctionImportMapping FunctionImportName="GetTotals" FunctionName="jetstrea_LogbookEntities.Store.GetTotals">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.GetTotals_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.GetTotals_Result">
                 <ScalarProperty Name="TotalMin" ColumnName="TotalMin" />
                 <ScalarProperty Name="P1SMin" ColumnName="P1SMin" />
                 <ScalarProperty Name="P1SFlight" ColumnName="P1SFlight" />
@@ -711,9 +774,9 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="LogBookFrontPageSummary" FunctionName="jetstrea_LogbookModel.Store.LogBookFrontPageSummary">
+          <FunctionImportMapping FunctionImportName="LogBookFrontPageSummary" FunctionName="jetstrea_LogbookEntities.Store.LogBookFrontPageSummary">
             <ResultMapping>
-              <ComplexTypeMapping TypeName="jetstrea_LogbookModel.LogBookFrontPageSummary_Result">
+              <ComplexTypeMapping TypeName="jetstrea_LogbookEntities.LogBookFrontPageSummary_Result">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
                 <ScalarProperty Name="Flights" ColumnName="Flights" />
@@ -727,10 +790,10 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="ReCalculatePageTotals" FunctionName="jetstrea_LogbookModel.Store.ReCalculatePageTotals" />
-          <FunctionImportMapping FunctionImportName="SaveFlight" FunctionName="jetstrea_LogbookModel.Store.SaveFlight" />
-          <FunctionImportMapping FunctionImportName="UpdatePage" FunctionName="jetstrea_LogbookModel.Store.UpdatePage" />
-          <FunctionImportMapping FunctionImportName="UpdateTotals" FunctionName="jetstrea_LogbookModel.Store.UpdateTotals" />
+          <FunctionImportMapping FunctionImportName="ReCalculatePageTotals" FunctionName="jetstrea_LogbookEntities.Store.ReCalculatePageTotals" />
+          <FunctionImportMapping FunctionImportName="SaveFlight" FunctionName="jetstrea_LogbookEntities.Store.SaveFlight" />
+          <FunctionImportMapping FunctionImportName="UpdatePage" FunctionName="jetstrea_LogbookEntities.Store.UpdatePage" />
+          <FunctionImportMapping FunctionImportName="UpdateTotals" FunctionName="jetstrea_LogbookEntities.Store.UpdateTotals" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -7,12 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogbookApi
+namespace LogbookApi.Database
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Aircraft
+    public partial class GetAllAirfield_Result
     {
         public int Id { get; set; }
         public string Name { get; set; }

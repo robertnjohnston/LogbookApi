@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="e64c55fd11534a36a56e9362109ae977" Name="Diagram1">
+        <EntityTypeShape EntityType="jetstrea_LogbookEntities.Aircraft" Width="1.5" PointX="0.75" PointY="3.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="jetstrea_LogbookEntities.Airfield" Width="1.5" PointX="0.75" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="jetstrea_LogbookEntities.Flight" Width="1.5" PointX="3" PointY="2.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="jetstrea_LogbookEntities.Page" Width="1.5" PointX="5.75" PointY="2.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="jetstrea_LogbookEntities.Totals" Width="1.5" PointX="2.75" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="jetstrea_LogbookEntities.Trace" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="jetstrea_LogbookEntities.FK_Flight_Aircraft" ManuallyRouted="false" />
+        <AssociationConnector Association="jetstrea_LogbookEntities.FK_Flight_Airfield" ManuallyRouted="false" />
+        <AssociationConnector Association="jetstrea_LogbookEntities.FK_Flight_Trace" ManuallyRouted="false" />
+        <AssociationConnector Association="jetstrea_LogbookEntities.PageFlight" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

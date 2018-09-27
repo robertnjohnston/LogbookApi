@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogbookApi
+namespace LogbookApi.Database
 {
     using System;
     
-    public partial class GetLastFlightDetails_Result
+    public partial class GetFlightsForPage_Result
     {
         public int FlightNumber { get; set; }
         public System.DateTime FlightDate { get; set; }
@@ -22,12 +22,10 @@ namespace LogbookApi
         public string AircraftReg { get; set; }
         public string LaunchType { get; set; }
         public int DurationMin { get; set; }
-        public string Duration { get; set; }
         public Nullable<int> DistanceFlown { get; set; }
         public Nullable<bool> Declared { get; set; }
         public int PilotInCharge { get; set; }
         public string Notes { get; set; }
         public string TraceFile { get; set; }
-        public Nullable<int> PageNumber { get; set; }
     }
 }

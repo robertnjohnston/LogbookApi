@@ -7,13 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogbookApi
+namespace LogbookApi.Database
 {
     using System;
     
-    public partial class GetAllAircraft_Result
+    public partial class getAllFlights_Result
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int FlightNumber { get; set; }
+        public System.DateTime FlightDate { get; set; }
     }
 }

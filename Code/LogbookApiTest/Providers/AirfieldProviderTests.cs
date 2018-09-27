@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 using System.Data.Entity;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
-using LogbookApi;
+using LogbookApi.Database;
 using LogbookApi.Providers;
 using LogbookApi.Providers.Implementation;
-using LogbookApiTest.TestData;
 using LogbookApiTest.TestData.Implementation;
 using Moq;
 using NUnit.Framework;
@@ -14,6 +13,7 @@ using NUnit.Framework;
 
 namespace LogbookApiTest.Providers
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture()]
     public class AirfieldProviderTests
     {
@@ -41,7 +41,7 @@ namespace LogbookApiTest.Providers
         {
             Action act = () => new AirfieldProvider(null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("context");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
 
         [Test]
@@ -59,7 +59,7 @@ namespace LogbookApiTest.Providers
 
             var result = GetTestSubject().Get(1);
 
-            result.ShouldBeEquivalentTo(FlightTestData.Airfield());
+            result.Should().BeEquivalentTo(FlightTestData.Airfield());
         }
 
         [Test]
@@ -90,7 +90,7 @@ namespace LogbookApiTest.Providers
             var Airfield = new Airfield { Id = 7, Name = "Airfield" };
 
             var result = GetTestSubject().Save(Airfield);
-            result.ShouldBeEquivalentTo(Airfield);
+            result.Should().BeEquivalentTo(Airfield);
         }
 
         private IEntityProvider<Airfield> GetTestSubject()

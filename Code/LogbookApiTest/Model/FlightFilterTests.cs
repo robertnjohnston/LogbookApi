@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using FluentAssertions;
 using LogbookApi.Models;
 using NUnit.Framework;
 
 namespace LogbookApiTest.Model
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture]
     public class FlightFilterTests
     {
@@ -107,19 +109,7 @@ namespace LogbookApiTest.Model
             filter.IsValid().Should().BeFalse();
         }
         
-        [Test]
-        public void ShouldReturnAnInvalidFilterOnInvalidAircraftId()
-        {
-            var filter = new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = -1};
-            filter.IsValid().Should().BeFalse();
-        }
 
-        [Test]
-        public void ShouldReturnAValidFilterOnValidAircraftId()
-        {
-            var filter = new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 1 };
-            filter.IsValid().Should().BeTrue();
-        }
 
         [Test]
         public void ShouldReturnAnInvalidFilterOnAirfieldMissing()
@@ -128,19 +118,6 @@ namespace LogbookApiTest.Model
             filter.IsValid().Should().BeFalse();
         }
 
-        [Test]
-        public void ShouldReturnAnInvalidFilterOnInvalidAirfieldId()
-        {
-            var filter = new FlightFilter { FilterType = FilterType.Airfield, Airfield = -1 };
-            filter.IsValid().Should().BeFalse();
-        }
-
-        [Test]
-        public void ShouldReturnAValidFilterOnValidAirfieldId()
-        {
-            var filter = new FlightFilter { FilterType = FilterType.Airfield, Airfield = 1 };
-            filter.IsValid().Should().BeTrue();
-        }
         #endregion
 
     #region Crew

@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Http;
 using CuttingEdge.Conditions;
+using LogbookApi.Database;
 using LogbookApi.Models;
 using LogbookApi.Providers;
 
@@ -21,7 +22,7 @@ namespace LogbookApi.Controllers
         }
 
         [HttpGet]
-        [Route("FlightById/{id}")]
+        [Route("{id}")]
         public IHttpActionResult Get(int id)
         {
             if (id <= 0) return NotFound();
@@ -31,9 +32,9 @@ namespace LogbookApi.Controllers
             return (flight == null) ? NotFound() : Ok(flight);
         }
 
-        [HttpGet]
-        [Route("FlightByFilter")]
-        public IHttpActionResult Get([FromBody] FlightFilter filter)
+        [HttpPost]
+        [Route("Filter")]
+        public IHttpActionResult Post([FromBody] FlightFilter filter)
         {
             if(filter == null) return BadRequest("Invalid Filter");
 
@@ -44,16 +45,6 @@ namespace LogbookApi.Controllers
             return ((List<Flight>)flights).Any() ? Ok(flights) : NotFound();
         }
 
-        [HttpGet]
-        [Route("FlightsByPage/{id}")]
-        public IHttpActionResult GetPageFlights(int id)
-        {
-            if (id <= 0) return NotFound();
-
-            dynamic flights = _flightProvider.GetFlightsByPage(id);
-
-            return ((List<Flight>)flights).Any() ? Ok(flights) : NotFound();
-        }
 
         [HttpPost]
         [Route("Save")]

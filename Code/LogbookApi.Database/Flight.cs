@@ -16,6 +16,8 @@ namespace LogbookApi.Database
     {
         public int FlightNumber { get; set; }
         public System.DateTime FlightDate { get; set; }
+        public int AirfieldId { get; set; }
+        public int AircraftId { get; set; }
         public string AircraftReg { get; set; }
         public string LaunchType { get; set; }
         public int DurationMin { get; set; }
@@ -23,10 +25,10 @@ namespace LogbookApi.Database
         public Nullable<bool> Declared { get; set; }
         public int PilotInCharge { get; set; }
         public string Notes { get; set; }
+        public int PageNumber { get; set; }
     
         public virtual Aircraft Aircraft { get; set; }
         public virtual Airfield Airfield { get; set; }
         public virtual Trace Trace { get; set; }
-        public virtual Page Page { get; set; }
     }
 }

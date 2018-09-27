@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using CuttingEdge.Conditions;
+using LogbookApi.Database;
 
 namespace LogbookApi.Providers.Implementation
 {

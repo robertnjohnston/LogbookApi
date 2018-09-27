@@ -1,15 +1,25 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
+using LogbookApi.Database;
+using LogbookApi.Providers;
 
 namespace LogbookApi.Controllers
 {
     [RoutePrefix("api/Page")]
     public class PageController : ApiController
     {
+        private readonly IPageProvider _pageProvider;
+        public PageController(IPageProvider pageProvider)
+        {
+            _pageProvider = pageProvider;
+        }
         [HttpGet]
         [Route("{id}")]
         public IHttpActionResult Get(int id)
         {
-            return Ok();
+            var result =  _pageProvider.GetPage(id);
+
+            return Ok(result);
         }
 
         [HttpPost]

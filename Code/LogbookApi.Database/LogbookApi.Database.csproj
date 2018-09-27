@@ -59,6 +59,36 @@
     <Compile Include="Flight.cs">
       <DependentUpon>Logbook.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetAircraft_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetAirfield_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetAllAircraft_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetAllAirfield_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getAllFlights_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetFlightDetails_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetFlightsForPage_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetLastFlightDetails_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetPages_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GetTotals_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
     <Compile Include="Logbook.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -74,6 +104,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Logbook.edmx</DependentUpon>
     </Compile>
+    <Compile Include="LogBookFrontPageSummary_Result.cs">
+      <DependentUpon>Logbook.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Flight.cs" />
+    <Compile Include="Models\Page.cs" />
     <Compile Include="Page.cs">
       <DependentUpon>Logbook.tt</DependentUpon>
     </Compile>
@@ -86,23 +121,24 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.Config" />
     <EntityDeploy Include="Logbook.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Logbook.Designer.cs</LastGenOutput>
     </EntityDeploy>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.Config" />
     <None Include="Logbook.edmx.diagram">
       <DependentUpon>Logbook.edmx</DependentUpon>
     </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Logbook.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Logbook.Context.cs</LastGenOutput>
       <DependentUpon>Logbook.edmx</DependentUpon>
+      <LastGenOutput>Logbook.Context.cs</LastGenOutput>
     </Content>
     <Content Include="Logbook.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -110,8 +146,6 @@
       <LastGenOutput>Logbook.cs</LastGenOutput>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

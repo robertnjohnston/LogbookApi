@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Data.Entity;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using NUnit.Framework;
 using Moq;
 using FluentAssertions;
-using LogbookApi;
+using LogbookApi.Database;
 using LogbookApi.Exceptions;
 using LogbookApi.Models;
 using LogbookApi.Providers;
@@ -13,6 +14,7 @@ using LogbookApiTest.TestData.Implementation;
 
 namespace LogbookApiTest.Providers
 {
+    [ExcludeFromCodeCoverage]
     [TestFixture]
     public class FlightProviderTests
     {
@@ -49,7 +51,7 @@ namespace LogbookApiTest.Providers
         {
             Action act = () => new FlightProvider(null, null, null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("context");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("context");
         }
 
         [Test]
@@ -57,7 +59,7 @@ namespace LogbookApiTest.Providers
         {
             Action act = () => new FlightProvider(Context.Object, null, null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("airfieldProvider");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("airfieldProvider");
         }
 
         [Test]
@@ -65,7 +67,7 @@ namespace LogbookApiTest.Providers
         {
             Action act = () => new FlightProvider(Context.Object, MockAirfieldProvider.Object, null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("aircraftProvider");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("aircraftProvider");
         }
 
         [Test]
@@ -83,7 +85,7 @@ namespace LogbookApiTest.Providers
 
             var result = GetTestSubject().GetFlight(1);
 
-            result.ShouldBeEquivalentTo(resultData);
+            result.Should().BeEquivalentTo(resultData);
         }
 
         [Test]
@@ -93,7 +95,7 @@ namespace LogbookApiTest.Providers
 
             Action act = () => fp.GetFilteredFlights(new FlightFilter());
 
-            act.ShouldThrow<InvalidFilterException>();
+            act.Should().Throw<InvalidFilterException>();
         }
 
         [Test]
@@ -156,7 +158,7 @@ namespace LogbookApiTest.Providers
 
             var result =
                 fp.GetFilteredFlights(
-                    new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 99 });
+                    new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = "Test" });
 
             result.Count.Should().Be(0);
         }
@@ -168,7 +170,7 @@ namespace LogbookApiTest.Providers
 
             var result =
                 fp.GetFilteredFlights(
-                    new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = 1 });
+                    new FlightFilter { FilterType = FilterType.Aircraft, Aircraft = "Bocian" });
 
             result.Count.Should().Be(10);
         }
@@ -179,7 +181,7 @@ namespace LogbookApiTest.Providers
             var fp = GetTestSubject();
 
             var result =
-                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Airfield, Airfield = 99 });
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Airfield, Airfield = "Test" });
 
             result.Count.Should().Be(0);
         }
@@ -190,7 +192,7 @@ namespace LogbookApiTest.Providers
             var fp = GetTestSubject();
 
             var result =
-                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Airfield, Airfield = 1 });
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Airfield, Airfield = "Cranfield" });
 
             result.Count.Should().Be(10);
         }
@@ -245,7 +247,7 @@ namespace LogbookApiTest.Providers
             var fp = GetTestSubject();
 
             var result =
-                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Number | FilterType.Aircraft, FlightStart = 1, FlightEnd = 10, Aircraft = 2});
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Number | FilterType.Aircraft, FlightStart = 1, FlightEnd = 10, Aircraft = "LS4"});
 
             result.Count.Should().Be(0);
         }
@@ -256,7 +258,7 @@ namespace LogbookApiTest.Providers
             var fp = GetTestSubject();
 
             var result =
-                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Number | FilterType.Aircraft, FlightStart = 1, FlightEnd = 20, Aircraft = 2 });
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Number | FilterType.Aircraft, FlightStart = 1, FlightEnd = 20, Aircraft = "Bocian" });
 
             result.Count.Should().NotBe(0);
         }
@@ -267,7 +269,7 @@ namespace LogbookApiTest.Providers
             var fp = GetTestSubject();
 
             var result =
-                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Date | FilterType.Aircraft, DateStart = new DateTime(1988, 01, 01), DateEnd = new DateTime(1988, 04, 30), Aircraft = 2 });
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Date | FilterType.Aircraft, DateStart = new DateTime(1988, 01, 01), DateEnd = new DateTime(1988, 04, 30), Aircraft = "LS4" });
 
             result.Count.Should().Be(0);
         }
@@ -279,9 +281,19 @@ namespace LogbookApiTest.Providers
             var fp = GetTestSubject();
 
             var result =
-                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Date | FilterType.Aircraft, DateStart = new DateTime(1988, 01, 01) , DateEnd = DateTime.Now, Aircraft = 2 });
+                fp.GetFilteredFlights(new FlightFilter { FilterType = FilterType.Date | FilterType.Aircraft, DateStart = new DateTime(1988, 01, 01) , DateEnd = DateTime.Now, Aircraft = "Bocian" });
 
             result.Count.Should().NotBe(0);
+        }
+
+        [Test]
+        public void ShouldReturnListOfFlightsOnFilterTrace()
+        {
+            var fp = GetTestSubject();
+
+            var result = fp.GetFilteredFlights(new FlightFilter {FilterType = FilterType.Trace});
+
+            result.Count.Should().Be(1);
         }
 
         [Test]
@@ -291,7 +303,7 @@ namespace LogbookApiTest.Providers
 
             Action act = () => fp.SaveFlight(null);
 
-            act.ShouldThrow<ArgumentNullException>().And.ParamName.Should().Be("flight");
+            act.Should().Throw<ArgumentNullException>().And.ParamName.Should().Be("flight");
         }
 
         [Test]
@@ -301,7 +313,7 @@ namespace LogbookApiTest.Providers
 
             Action act = () => fp.SaveFlight(new Flight());
 
-            act.ShouldThrow<InvalidFlightException>().And.Message.Length.Should().BeGreaterThan(0);
+            act.Should().Throw<InvalidFlightException>().And.Message.Length.Should().BeGreaterThan(0);
         }
 
         [Test]
@@ -312,6 +324,16 @@ namespace LogbookApiTest.Providers
             Action act = () => fp.SaveFlight(new Flight());
         }
 
+        [Test]
+        public void ShouldGetLastPageNumber()
+        {
+            var fp = GetTestSubject();
+
+            var result = fp.GetLastFlightNumber();
+
+            result.Should().Be(20);
+        }
+
         private Flight SetupTest()
         {
             var testFlight = FlightTestData.Flight(1);
@@ -319,8 +341,8 @@ namespace LogbookApiTest.Providers
             Context.Setup(m => m.Flight).Returns(FlightDbSet.Object);
             MockAirfieldProvider.Setup(m => m.Get(1)).Returns(FlightTestData.Airfield);
             MockAircraftProvider.Setup(m => m.Get(1)).Returns(FlightTestData.Aircraft);
-            testFlight.Airfield = FlightTestData.Airfield().Name;
-            testFlight.Aircraft = FlightTestData.Aircraft().Name;
+            testFlight.Airfield = FlightTestData.Airfield();
+            testFlight.Aircraft = FlightTestData.Aircraft();
             return testFlight;
         }
 

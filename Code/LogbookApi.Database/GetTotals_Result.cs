@@ -7,15 +7,12 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace LogbookApi
+namespace LogbookApi.Database
 {
     using System;
     
-    public partial class GetPages_Result
+    public partial class GetTotals_Result
     {
-        public int pageNumber { get; set; }
-        public int StartFlight { get; set; }
-        public int EndFlight { get; set; }
         public int TotalMin { get; set; }
         public int P1SMin { get; set; }
         public int P1SFlight { get; set; }
@@ -23,5 +20,7 @@ namespace LogbookApi
         public int P1MFlight { get; set; }
         public int P2Min { get; set; }
         public int P2Flight { get; set; }
+        public string Name { get; set; }
+        public bool Recalc { get; set; }
     }
 }

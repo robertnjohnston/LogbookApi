@@ -16,7 +16,5 @@ namespace LogbookApi.Database
     {
         public int FlightNumber { get; set; }
         public string TraceFile { get; set; }
-    
-        public virtual Flight Flight { get; set; }
     }
 }
